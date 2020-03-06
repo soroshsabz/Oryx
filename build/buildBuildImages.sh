@@ -6,6 +6,8 @@
 
 set -e
 
+export DOCKER_BUILDKIT=1
+
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 
 # Load all variables
@@ -62,6 +64,7 @@ function BuildAndTagStage()
 		$buildMetadataArgs \
 		$BASE_TAG_BUILD_ARGS \
 		-f "$dockerFile" \
+		--progress=plain \
 		.
 }
 
@@ -97,13 +100,18 @@ function buildDockerImage() {
 		$storageArgs \
 		$buildMetadataArgs \
 		-f "$dockerFileToBuild" \
+		--progress=plain \
 		.
 
 	echo
 	echo Building a base image for tests...
 	# Do not write this image tag to the artifacts file as we do not intend to push it
 	testImageTag="$dockerImageForTestsRepoName:$dockerImageBaseTag"
-	docker build -t $testImageTag -f "$dockerFileForTestsToBuild" .
+	docker build \
+		-t $testImageTag \
+		-f "$dockerFileForTestsToBuild" \
+		--progress=plain \
+		.
 
 	echo "$dockerImageRepoName:$dockerImageBaseTag" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 
@@ -164,6 +172,7 @@ docker build -t buildscriptgenerator \
 	--build-arg AGENTBUILD=$BUILD_SIGNED \
 	$buildMetadataArgs \
 	-f "$BUILD_IMAGES_BUILDSCRIPTGENERATOR_DOCKERFILE" \
+	--progress=plain \
 	.
 
 echo
@@ -176,6 +185,7 @@ docker build -t $builtImageName \
 	$storageArgs \
 	$buildMetadataArgs \
 	-f "$BUILD_IMAGES_GITHUB_ACTIONS_DOCKERFILE" \
+	--progress=plain \
 	.
 echo
 echo "$builtImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
@@ -191,6 +201,7 @@ docker build -t $builtImageName \
 	$buildMetadataArgs \
 	$storageArgs \
 	-f "$BUILD_IMAGES_AZ_FUNCS_JAMSTACK_DOCKERFILE" \
+	--progress=plain \
 	.
 echo
 echo "$builtImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
@@ -222,6 +233,7 @@ docker build -t $builtImageTag \
 	--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
 	$buildMetadataArgs \
 	-f "$BUILD_IMAGES_CLI_DOCKERFILE" \
+	--progress=plain \
 	.
 echo
 echo "$builtImageTag" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE

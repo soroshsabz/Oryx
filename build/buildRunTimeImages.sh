@@ -8,6 +8,8 @@ set -ex
 
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 
+export DOCKER_BUILDKIT=1
+
 # Load all variables
 source $REPO_DIR/build/__variables.sh
 source $REPO_DIR/build/__functions.sh
@@ -44,7 +46,8 @@ docker build \
     --pull \
     -f "$RUNTIME_BASE_IMAGE_DOCKERFILE_PATH" \
     -t "$RUNTIME_BASE_IMAGE_NAME" \
-    $REPO_DIR
+    --progress=plain \
+    $REPO_DIR \
 
 execAllGenerateDockerfiles "$runtimeImagesSourceDir"
 
@@ -88,6 +91,7 @@ for dockerFile in $dockerFiles; do
         --build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_STORAGE_BASE_URL \
         $args \
         $labels \
+		--progress=plain \
         .
 
     echo "$localImageTagName" >> $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE
