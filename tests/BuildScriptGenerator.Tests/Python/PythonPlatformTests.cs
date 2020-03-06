@@ -15,7 +15,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
     public class PythonPlatformTests
     {
         [Fact]
-        public void GeneratedSnippet_DoesNotHaveInstallScript_IfDynamicInstallIsDisabled()
+        public void GeneratedSnippet_DoesNotHaveInstallScript_IfDynamicInstallIsDisabled_AndSdkIsNotInstalledAlready()
         {
             // Arrange
             var options = new BuildScriptGeneratorOptions() { EnableDynamicInstall = false };
@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             var installerScriptSnippet = "##INSTALLER_SCRIPT##";
             var versionProvider = new TestPythonVersionProvider(new[] { "3.7.5", "3.8.0" }, defaultVersion: "3.7.5");
             var platformInstaller = new TestPythonPlatformInstaller(
-                isVersionAlreadyInstalled: false,
+                isSdkAlreadyInstalled: false,
                 installerScript: installerScriptSnippet,
                 Options.Create(options),
                 environment);
@@ -44,7 +44,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         }
 
         [Fact]
-        public void GeneratedSnippet_HasInstallationScript_IfDynamicInstallIsEnabled()
+        public void GeneratedSnippet_HasInstallationScript_IfDynamicInstallIsEnabled_AndSdkIsNotInstalledAlready()
         {
             // Arrange
             var options = new BuildScriptGeneratorOptions() { EnableDynamicInstall = true };
@@ -52,7 +52,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             var installerScriptSnippet = "##INSTALLER_SCRIPT##";
             var versionProvider = new TestPythonVersionProvider(new[] { "3.7.5", "3.8.0" }, defaultVersion: "3.7.5");
             var platformInstaller = new TestPythonPlatformInstaller(
-                isVersionAlreadyInstalled: false,
+                isSdkAlreadyInstalled: false,
                 installerScript: installerScriptSnippet,
                 Options.Create(options),
                 environment);
@@ -74,7 +74,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         }
 
         [Fact]
-        public void GeneratedSnippet_DoesNotHaveInstallScript_IfVersionIsAlreadyPresentOnDisk()
+        public void GeneratedSnippet_DoesNotHaveInstallScript_IfDynamicInstallIsEnabled_AndSdkIsAlreadyInstalled()
         {
             // Arrange
             var options = new BuildScriptGeneratorOptions() { EnableDynamicInstall = true };
@@ -82,7 +82,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             var installerScriptSnippet = "##INSTALLER_SCRIPT##";
             var versionProvider = new TestPythonVersionProvider(new[] { "3.7.5", "3.8.0" }, defaultVersion: "3.7.5");
             var platformInstaller = new TestPythonPlatformInstaller(
-                isVersionAlreadyInstalled: true,
+                isSdkAlreadyInstalled: true,
                 installerScript: installerScriptSnippet,
                 Options.Create(options),
                 environment);
@@ -209,13 +209,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             private readonly string _installerScript;
 
             public TestPythonPlatformInstaller(
-                bool isVersionAlreadyInstalled,
+                bool isSdkAlreadyInstalled,
                 string installerScript,
                 IOptions<BuildScriptGeneratorOptions> commonOptions,
                 IEnvironment environment)
                 : base(commonOptions, environment)
             {
-                _isVersionAlreadyInstalled = isVersionAlreadyInstalled;
+                _isVersionAlreadyInstalled = isSdkAlreadyInstalled;
                 _installerScript = installerScript;
             }
 
