@@ -17,6 +17,8 @@ declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 # Load all variables
 source $REPO_DIR/build/__variables.sh
 
+export DOCKER_BUILDKIT=1
+
 # Example: dontetcore, python
 IMAGE_DIR_TO_BUILD="$1"
 UNIQUE_TAG=""

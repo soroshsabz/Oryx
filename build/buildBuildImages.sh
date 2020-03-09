@@ -17,6 +17,8 @@ source $REPO_DIR/build/__nodeVersions.sh   # For YARN_CACHE_BASE_TAG
 source $REPO_DIR/build/__nodeVersions.sh   # For YARN_CACHE_BASE_TAG
 source $REPO_DIR/build/__sdkStorageConstants.sh
 
+export DOCKER_BUILDKIT=1
+
 declare -r BASE_TAG_BUILD_ARGS="--build-arg PYTHON_BASE_TAG=$PYTHON_BASE_TAG \
                                 --build-arg PHP_BUILD_BASE_TAG=$PHP_BUILD_BASE_TAG \
                                 --build-arg YARN_CACHE_BASE_TAG=$YARN_CACHE_BASE_TAG" \

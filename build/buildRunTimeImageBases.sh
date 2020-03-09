@@ -13,6 +13,8 @@ source $REPO_DIR/build/__variables.sh
 source $REPO_DIR/build/__functions.sh
 source $REPO_DIR/build/__nodeVersions.sh
 
+export DOCKER_BUILDKIT=1
+
 runtimeImagesSourceDir="$RUNTIME_IMAGES_SRC_DIR"
 runtimeSubDir="$1"
 if [ ! -z "$runtimeSubDir" ]
