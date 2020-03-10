@@ -13,9 +13,7 @@ namespace Microsoft.Oryx.Common.Tests
 {
     public class ImageTestHelperTest
     {
-        private const string _imageBaseEnvironmentVariable = "ORYX_TEST_IMAGE_BASE";
-        private const string _tagSuffixEnvironmentVariable = "ORYX_TEST_TAG_SUFFIX";
-        private const string _defaultImageBase = "oryxdevmcr.azurecr.io/public/oryx";
+        private const string _defaultRepoPrefix = "oryxdevmcr.azurecr.io/public/oryx";
 
         private const string _buildRepository = "build";
         private const string _packRepository = "pack";
@@ -30,217 +28,261 @@ namespace Microsoft.Oryx.Common.Tests
         }
 
         [Fact]
-        public void GetTestRuntimeImage_Validate_ImageBaseSet()
+        public void GetRuntimeImage_Validate_RepoPrefixSet()
         {
             // Arrange
             var platformName = "test";
             var platformVersion = "1.0";
-            var imageBaseValue = "oryxtest";
+            var repoPrefix = "oryxtest";
             var tagSuffixValue = string.Empty;
-            var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
+            var imageHelper = new ImageTestHelper(_output, repoPrefix, tagSuffixValue);
 
             // Act
-            var runtimeImage = imageHelper.GetTestRuntimeImage(platformName, platformVersion);
+            var runtimeImage = imageHelper.GetRuntimeImage(platformName, platformVersion);
 
             // Assert
-            var expectedImage = $"{imageBaseValue}/{platformName}:{platformVersion}";
+            var expectedImage = $"{repoPrefix}/oryx/{platformName}:{platformVersion}";
             Assert.Equal(expectedImage, runtimeImage);
         }
 
         [Fact]
-        public void GetTestRuntimeImage_Validate_TagSuffixSet()
+        public void GetRuntimeImage_Validate_TagSuffixSet()
         {
             // Arrange
             var platformName = "test";
             var platformVersion = "1.0";
-            var imageBaseValue = string.Empty;
-            var tagSuffixValue = "-buildNumber";
-            var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
+            var repoPrefix = string.Empty;
+            var tagSuffixValue = "buildNumber";
+            var imageHelper = new ImageTestHelper(_output, repoPrefix, tagSuffixValue);
+            var expectedImage = $"{_defaultRepoPrefix}/{platformName}:{platformVersion}-{tagSuffixValue}";
 
             // Act
-            var runtimeImage = imageHelper.GetTestRuntimeImage(platformName, platformVersion);
+            var runtimeImage = imageHelper.GetRuntimeImage(platformName, platformVersion);
 
             // Assert
-            var expectedImage = $"{_defaultImageBase}/{platformName}:{platformVersion}{tagSuffixValue}";
             Assert.Equal(expectedImage, runtimeImage);
         }
 
         [Fact]
-        public void GetTestRuntimeImage_Validate_NoImageBaseOrTagSuffixSet()
+        public void GetRuntimeImage_Validate_NoRepoPrefixOrTagSuffixSet()
         {
             // Arrange
             var platformName = "test";
             var platformVersion = "1.0";
-            var imageBaseValue = string.Empty;
+            var repoPrefix = string.Empty;
             var tagSuffixValue = string.Empty;
-            var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
+            var imageHelper = new ImageTestHelper(_output, repoPrefix, tagSuffixValue);
 
             // Act
-            var runtimeImage = imageHelper.GetTestRuntimeImage(platformName, platformVersion);
+            var runtimeImage = imageHelper.GetRuntimeImage(platformName, platformVersion);
 
             // Assert
-            var expectedImage = $"{_defaultImageBase}/{platformName}:{platformVersion}";
+            var expectedImage = $"{_defaultRepoPrefix}/{platformName}:{platformVersion}";
             Assert.Equal(expectedImage, runtimeImage);
         }
 
         [Fact]
-        public void GetTestRuntimeImage_Validate_BothImageBaseAndTagSuffixSet()
+        public void GetRuntimeImage_Validate_BothRepoPrefixAndTagSuffixSet()
         {
             // Arrange
             var platformName = "test";
             var platformVersion = "1.0";
-            var imageBaseValue = "oryxtest";
-            var tagSuffixValue = "-buildNumber";
-            var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
+            var repoPrefix = "oryxtest";
+            var tagSuffixValue = "buildNumber";
+            var expectedImage = $"{repoPrefix}/oryx/{platformName}:{platformVersion}-{tagSuffixValue}";
+            var imageHelper = new ImageTestHelper(_output, repoPrefix, tagSuffixValue);
 
             // Act
-            var runtimeImage = imageHelper.GetTestRuntimeImage(platformName, platformVersion);
+            var runtimeImage = imageHelper.GetRuntimeImage(platformName, platformVersion);
 
             // Assert
-            var expectedImage = $"{imageBaseValue}/{platformName}:{platformVersion}{tagSuffixValue}";
             Assert.Equal(expectedImage, runtimeImage);
         }
 
         [Fact]
-        public void GetTestBuildImage_Validate_ImageBaseSet()
+        public void GetBuildImage_Validate_RepoPrefixSet()
         {
             // Arrange
-            var imageBaseValue = "oryxtest";
+            var repoPrefix = "oryxtest";
             var tagSuffixValue = string.Empty;
-            var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
+            var imageHelper = new ImageTestHelper(_output, repoPrefix, tagSuffixValue);
 
             // Act
-            var buildImage = imageHelper.GetTestBuildImage();
+            var buildImage = imageHelper.GetBuildImage();
 
             // Assert
-            var expectedImage = $"{imageBaseValue}/{_buildRepository}:{_latestTag}";
+            var expectedImage = $"{repoPrefix}/oryx/{_buildRepository}:{_latestTag}";
             Assert.Equal(expectedImage, buildImage);
         }
 
         [Fact]
-        public void GetTestBuildImage_Validate_TagSuffixSet()
+        public void GetBuildImage_Validate_TagSuffixSet()
         {
             // Arrange
-            var imageBaseValue = string.Empty;
-            var tagSuffixValue = "-buildNumber";
-            var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
+            var repoPrefix = string.Empty;
+            var tagSuffixValue = "buildNumber";
+            var expectedImage = $"{_defaultRepoPrefix}/{_buildRepository}:{tagSuffixValue}";
+            var imageHelper = new ImageTestHelper(_output, repoPrefix, tagSuffixValue);
 
             // Act
-            var buildImage = imageHelper.GetTestBuildImage();
+            var buildImage = imageHelper.GetBuildImage();
 
             // Assert
-            var expectedTag = tagSuffixValue.TrimStart('-');
-            var expectedImage = $"{_defaultImageBase}/{_buildRepository}:{expectedTag}";
             Assert.Equal(expectedImage, buildImage);
         }
 
         [Fact]
-        public void GetTestSlimBuildImage_Validate_ImageBaseSet()
+        public void GetSlimBuildImage_Validate_RepoPrefixSet()
         {
             // Arrange
-            var imageBaseValue = "oryxtest";
+            var repoPrefix = "oryxtest";
             var tagSuffixValue = string.Empty;
-            var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
+            var imageHelper = new ImageTestHelper(_output, repoPrefix, tagSuffixValue);
 
             // Act
-            var buildImage = imageHelper.GetTestSlimBuildImage();
+            var buildImage = imageHelper.GetSlimBuildImage();
 
             // Assert
-            var expectedImage = $"{imageBaseValue}/{_buildRepository}:{_slimTag}";
+            var expectedImage = $"{repoPrefix}/oryx/{_buildRepository}:{_slimTag}";
             Assert.Equal(expectedImage, buildImage);
         }
 
         [Fact]
-        public void GetTestSlimBuildImage_Validate_TagSuffixSet()
+        public void GetSlimBuildImage_Validate_TagSuffixSet()
         {
             // Arrange
-            var imageBaseValue = string.Empty;
-            var tagSuffixValue = "-buildNumber";
-            var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
+            var repoPrefix = string.Empty;
+            var tagSuffixValue = "buildNumber";
+            var imageHelper = new ImageTestHelper(_output, repoPrefix, tagSuffixValue);
+            var expectedImage = $"{_defaultRepoPrefix}/{_buildRepository}:{_slimTag}-{tagSuffixValue}";
 
             // Act
-            var buildImage = imageHelper.GetTestSlimBuildImage();
+            var buildImage = imageHelper.GetSlimBuildImage();
 
             // Assert
-            var expectedImage = $"{_defaultImageBase}/{_buildRepository}:{_slimTag}{tagSuffixValue}";
             Assert.Equal(expectedImage, buildImage);
         }
 
         [Fact]
-        public void GetTestPackImage_Validate_ImageBaseSet()
+        public void GetPackImage_Validate_RepoPrefixSet()
         {
             // Arrange
-            var imageBaseValue = "oryxtest";
+            var repoPrefix = "oryxtest";
             var tagSuffixValue = string.Empty;
-            var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
+            var imageHelper = new ImageTestHelper(_output, repoPrefix, tagSuffixValue);
+            var expectedImage = $"{repoPrefix}/oryx/{_packRepository}:{_latestTag}";
 
             // Act
-            var packImage = imageHelper.GetTestPackImage();
+            var packImage = imageHelper.GetPackImage();
 
             // Assert
-            var expectedImage = $"{imageBaseValue}/{_packRepository}:{_latestTag}";
             Assert.Equal(expectedImage, packImage);
         }
 
         [Fact]
-        public void GetTestPackImage_Validate_TagSuffixSet()
+        public void GetPackImage_Validate_TagSuffixSet()
         {
             // Arrange
-            var imageBaseValue = string.Empty;
-            var tagSuffixValue = "-buildNumber";
-            var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
+            var repoPrefix = string.Empty;
+            var tagSuffixValue = "buildNumber";
+            var imageHelper = new ImageTestHelper(_output, repoPrefix, tagSuffixValue);
+            var expectedImage = $"{_defaultRepoPrefix}/{_packRepository}:{tagSuffixValue}";
 
             // Act
-            var packImage = imageHelper.GetTestPackImage();
+            var packImage = imageHelper.GetPackImage();
 
             // Assert
-            var expectedTag = tagSuffixValue.TrimStart('-');
-            var expectedImage = $"{_defaultImageBase}/{_packRepository}:{expectedTag}";
             Assert.Equal(expectedImage, packImage);
         }
 
         [Fact]
-        public void GetTestBuildImage_Validate_LatestTag()
+        public void GetBuildImage_Validate_LatestTag()
         {
             // Arrange
-            var imageBaseValue = string.Empty;
+            var repoPrefix = string.Empty;
             var tagSuffixValue = string.Empty;
-            var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
+            var imageHelper = new ImageTestHelper(_output, repoPrefix, tagSuffixValue);
+            var expectedImage = $"{_defaultRepoPrefix}/{_buildRepository}:{_latestTag}";
 
             // Act
-            var buildImage = imageHelper.GetTestBuildImage(_latestTag);
+            var buildImage = imageHelper.GetBuildImage(_latestTag);
 
             // Assert
-            var expectedImage = $"{_defaultImageBase}/{_buildRepository}:{_latestTag}";
             Assert.Equal(expectedImage, buildImage);
         }
 
         [Fact]
-        public void GetTestBuildImage_Validate_SlimTag()
+        public void GetBuildImage_Validate_SlimTag()
         {
             // Arrange
-            var imageBaseValue = string.Empty;
+            var repoPrefix = string.Empty;
             var tagSuffixValue = string.Empty;
-            var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
+            var imageHelper = new ImageTestHelper(_output, repoPrefix, tagSuffixValue);
+            var expectedImage = $"{_defaultRepoPrefix}/{_buildRepository}:{_slimTag}";
 
             // Act
-            var buildImage = imageHelper.GetTestBuildImage(_slimTag);
+            var buildImage = imageHelper.GetBuildImage(_slimTag);
 
             // Assert
-            var expectedImage = $"{_defaultImageBase}/{_buildRepository}:{_slimTag}";
             Assert.Equal(expectedImage, buildImage);
         }
 
         [Fact]
-        public void GetTestBuildImage_Validate_InvalidTag()
+        public void GetBuildImage_Validate_InvalidTag()
         {
             // Arrange
-            var imageBaseValue = string.Empty;
+            var repoPrefix = string.Empty;
             var tagSuffixValue = string.Empty;
-            var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
+            var imageHelper = new ImageTestHelper(_output, repoPrefix, tagSuffixValue);
 
             // Assert
-            Assert.Throws<NotSupportedException>(() => { imageHelper.GetTestBuildImage("invalidTag"); });
+            Assert.Throws<NotSupportedException>(() => { imageHelper.GetBuildImage("invalidTag"); });
+        }
+
+        // When running locally(dev boxes), release name is not set by default. It is only set in CI agents.
+        [Theory]
+        [InlineData("oryx/build", "registryPrefix/oryx/build:latest")]
+        [InlineData("oryx/build:latest", "registryPrefix/oryx/build:latest")]
+        [InlineData("registryPrefix/oryx/build", "registryPrefix/oryx/build:latest")]
+        [InlineData("registryPrefix/oryx/build:latest", "registryPrefix/oryx/build:latest")]
+        [InlineData("oryx/build:slim", "registryPrefix/oryx/build:slim")]
+        [InlineData("registryPrefix/oryx/build:slim", "registryPrefix/oryx/build:slim")]
+        public void ResolvedImageName_HasLatestTag_WhenThereIs_NoRelease(
+            string originalImageName,
+            string expectedImageName)
+        {
+            // Arrange
+            var repoPrefix = "registryPrefix";
+            var imageHelper = new ImageTestHelper(_output, repoPrefix, releaseName: null);
+
+            // Act
+            var actualImageName = imageHelper.ResolveImageName(originalImageName);
+
+            // Assert
+            Assert.Equal(expectedImageName, actualImageName);
+        }
+
+        // When running in CI agents, there is a release name.
+        [Theory]
+        [InlineData("oryx/build:latest", "registryPrefix/oryx/build:20200101.1")]
+        [InlineData("oryx/build", "registryPrefix/oryx/build:20200101.1")]
+        [InlineData("registryPrefix/oryx/build", "registryPrefix/oryx/build:20200101.1")]
+        [InlineData("oryx/build:slim", "registryPrefix/oryx/build:slim-20200101.1")]
+        [InlineData("registryPrefix/oryx/build:slim", "registryPrefix/oryx/build:slim-20200101.1")]
+        public void ResolvedImageName_HasReleaseSpecificTag_WhenThereIsRelease(
+            string originalImageName,
+            string expectedImageName)
+        {
+            // Arrange
+            var repoPrefix = "registryPrefix";
+            var releaseName = "20200101.1";
+            var imageHelper = new ImageTestHelper(_output, repoPrefix, releaseName);
+
+            // Act
+            var actualImageName = imageHelper.ResolveImageName(originalImageName);
+
+            // Assert
+            Assert.Equal(expectedImageName, actualImageName);
         }
     }
 }

@@ -13,76 +13,36 @@ namespace Microsoft.Oryx.Tests.Common
     /// </summary>
     public class ImageTestHelper
     {
-        private const string _imageBaseEnvironmentVariable = "ORYX_TEST_IMAGE_BASE";
-        private const string _tagSuffixEnvironmentVariable = "ORYX_TEST_TAG_SUFFIX";
-        private const string _defaultImageBase = "oryxdevmcr.azurecr.io/public/oryx";
+        public const string _defaultRepoPrefix = "oryxdevmcr.azurecr.io/public/oryx";
+        
+        private const string _repoPrefixEnvironmentVariable = "ORYX_TEST_IMAGE_BASE";
+        private const string _releaseNameEnvironmentVariable = "ORYX_TEST_TAG_SUFFIX";
 
-        private const string _azureFunctionsJamStack = "azfunc-jamstack";
-        private const string _gitHubActions = "github-actions";
-        private const string _buildRepository = "build";
-        private const string _packRepository = "pack";
-        private const string _cliRepository = "cli";
-        private const string _latestTag = "latest";
-        private const string _slimTag = "slim";
+        private ITestOutputHelper _output;
+        private string _repoPrefix;
+        private string _releaseName;
 
-        private readonly ITestOutputHelper _output;
-        private string _image;
-        private string _tagSuffix;
-
-        public ImageTestHelper() : this(output: null)
+        public ImageTestHelper() : this(outputHelper: null)
         {
         }
 
-        public ImageTestHelper(ITestOutputHelper output)
+        public ImageTestHelper(ITestOutputHelper outputHelper)
         {
-            _output = output;
-            _image = Environment.GetEnvironmentVariable(_imageBaseEnvironmentVariable);
-            if (string.IsNullOrEmpty(_image))
-            {
-                // If the ORYX_TEST_IMAGE_BASE environment variable was not set in the .sh script calling this test,
-                // then use the default value of 'oryxdevmcr.azurecr.io/public/oryx' as the image base for the tests.
-                // This should be used in cases where a image base should be used for the tests rather than the
-                // development registry (e.g., oryxmcr.azurecr.io/public/oryx)
-                _output?.WriteLine($"Could not find a value for environment variable " +
-                                  $"'{_imageBaseEnvironmentVariable}', using default image base '{_defaultImageBase}'.");
-                _image = _defaultImageBase;
-            }
+            var repoPrefix = Environment.GetEnvironmentVariable(_repoPrefixEnvironmentVariable);
+            var releaseName = Environment.GetEnvironmentVariable(_releaseNameEnvironmentVariable);
 
-            _tagSuffix = Environment.GetEnvironmentVariable(_tagSuffixEnvironmentVariable);
-            if (string.IsNullOrEmpty(_tagSuffix))
-            {
-                // If the ORYX_TEST_TAG_SUFFIX environment variable was not set in the .sh script calling this test,
-                // then don't append a suffix to the tag of this image. This should be used in cases where a specific
-                // runtime version tag should be used (e.g., node:8.8-20191025.1 instead of node:8.8)
-                _output?.WriteLine($"Could not find a value for environment variable " +
-                                  $"'{_tagSuffixEnvironmentVariable}', no suffix will be added to image tags.");
-                _tagSuffix = string.Empty;
-            }
+            Initialize(outputHelper, repoPrefix, releaseName);
         }
 
         /// <summary>
         /// NOTE: This constructor should only be used for ImageTestHelper unit tests.
         /// </summary>
-        /// <param name="output">XUnit output helper for logging.</param>
-        /// <param name="imageBase">The image base used to mimic the ORYX_TEST_IMAGE_BASE environment variable.</param>
-        /// <param name="tagSuffix">The tag suffix used to mimic the ORYX_TEST_TAG_SUFFIX environment variable.</param>
-        public ImageTestHelper(ITestOutputHelper output, string imageBase, string tagSuffix)
+        /// <param name="outputHelper">XUnit output helper for logging.</param>
+        /// <param name="repoPrefix">The image base used to mimic the ORYX_TEST_IMAGE_BASE environment variable.</param>
+        /// <param name="releaseName">The tag suffix used to mimic the ORYX_TEST_TAG_SUFFIX environment variable.</param>
+        public ImageTestHelper(ITestOutputHelper outputHelper, string repoPrefix, string releaseName)
         {
-            _output = output;
-            if (string.IsNullOrEmpty(imageBase))
-            {
-                _output?.WriteLine($"No value provided for imageBase, using default image base '{_defaultImageBase}'.");
-                imageBase = _defaultImageBase;
-            }
-
-            _image = imageBase;
-
-            if (string.IsNullOrEmpty(tagSuffix))
-            {
-                _output?.WriteLine("No value provided for tagSuffix, no suffix will be added to image tags.");
-            }
-
-            _tagSuffix = tagSuffix;
+            Initialize(outputHelper, repoPrefix, releaseName);
         }
 
         /// <summary>
@@ -94,9 +54,9 @@ namespace Microsoft.Oryx.Tests.Common
         /// <param name="platformName">The platform to pull the runtime image from.</param>
         /// <param name="platformVersion">The version of the platform to pull the runtime image from.</param>
         /// <returns>A runtime image that can be pulled for testing.</returns>
-        public string GetTestRuntimeImage(string platformName, string platformVersion)
+        public string GetRuntimeImage(string platformName, string platformVersion)
         {
-            return $"{_image}/{platformName}:{platformVersion}{_tagSuffix}";
+            return ResolveImageName($"oryx/{platformName}:{platformVersion}");
         }
 
         /// <summary>
@@ -105,10 +65,9 @@ namespace Microsoft.Oryx.Tests.Common
         /// variable ORYX_TEST_TAG_SUFFIX, it will be used as the tag, otherwise, the 'latest' tag will be used.
         /// </summary>
         /// <returns>A 'build' image that can be pulled for testing.</returns>
-        public string GetTestBuildImage()
+        public string GetBuildImage()
         {
-            var tag = GetTestTag();
-            return $"{_image}/{_buildRepository}:{tag}";
+            return ResolveImageName("oryx/build");
         }
 
         /// <summary>
@@ -116,18 +75,9 @@ namespace Microsoft.Oryx.Tests.Common
         /// </summary>
         /// <param name="tag"></param>
         /// <returns></returns>
-        public string GetTestBuildImage(string tag)
+        public string GetBuildImage(string tag)
         {
-            if (string.Equals(tag, _latestTag))
-            {
-                return GetTestBuildImage();
-            }
-            else if (string.Equals(tag, _slimTag))
-            {
-                return GetTestSlimBuildImage();
-            }
-
-            throw new NotSupportedException($"A build image cannot be created with the given tag '{tag}'.");
+            return ResolveImageName($"oryx/build:{tag}");
         }
 
         /// <summary>
@@ -136,9 +86,9 @@ namespace Microsoft.Oryx.Tests.Common
         /// variable ORYX_TEST_TAG_SUFFIX, it will be used as the tag, otherwise, the 'latest' tag will be used.
         /// </summary>
         /// <returns>A 'build:slim' image that can be pulled for testing.</returns>
-        public string GetTestSlimBuildImage()
+        public string GetSlimBuildImage()
         {
-            return $"{_image}/{_buildRepository}:{_slimTag}{_tagSuffix}";
+            return ResolveImageName("oryx/build:slim");
         }
 
         /// <summary>
@@ -149,12 +99,12 @@ namespace Microsoft.Oryx.Tests.Common
         /// <returns>A 'build:slim' image that can be pulled for testing.</returns>
         public string GetAzureFunctionsJamStackBuildImage()
         {
-            return $"{_image}/{_buildRepository}:{_azureFunctionsJamStack}{_tagSuffix}";
+            return ResolveImageName("oryx/build:azfunc-jamstack");
         }
 
         public string GetGitHubActionsBuildImage()
         {
-            return $"{_image}/{_buildRepository}:{_gitHubActions}{_tagSuffix}";
+            return ResolveImageName("oryx/build:github-actions");
         }
 
         /// <summary>
@@ -163,10 +113,9 @@ namespace Microsoft.Oryx.Tests.Common
         /// variable ORYX_TEST_TAG_SUFFIX, it will be used as the tag, otherwise, the 'latest' tag will be used.
         /// </summary>
         /// <returns>A 'pack' image that can be pulled for testing.</returns>
-        public string GetTestPackImage()
+        public string GetPackImage()
         {
-            var tag = GetTestTag();
-            return $"{_image}/{_packRepository}:{tag}";
+            return ResolveImageName("oryx/pack");
         }
 
         /// <summary>
@@ -175,25 +124,87 @@ namespace Microsoft.Oryx.Tests.Common
         /// variable ORYX_TEST_TAG_SUFFIX, it will be used as the tag, otherwise, the 'latest' tag will be used.
         /// </summary>
         /// <returns>A 'cli' image that can be pulled for testing.</returns>
-        public string GetTestCliImage()
+        public string GetCliImage()
         {
-            var tag = GetTestTag();
-            return $"{_image}/{_cliRepository}:{tag}";
+            return ResolveImageName("oryx/cli");
         }
 
-        private string GetTestTag()
+        public string ResolveImageName(string imageName)
         {
-            if (string.IsNullOrEmpty(_tagSuffix))
+            // Examples:
+            // oryx/build
+            // oryx/build:slim
+            var imageNameParts = imageName.Split(':');
+
+            string repo = null;
+            string tag = null;
+            if (imageNameParts.Length == 1)
             {
-                return _latestTag;
+                repo = imageNameParts[0];
+            }
+            else if (imageNameParts.Length == 2)
+            {
+                repo = imageNameParts[0];
+                tag = imageNameParts[1];
             }
 
-            if (_tagSuffix.StartsWith("-"))
+            // Ex: oryx/build       => oryxdevmcr.azurecr.io/public/oryx/build
+            // Ex: oryx/build:slim  => oryxdevmcr.azurecr.io/public/oryx/build
+            var resolvedRepo = repo;
+            if (!repo.StartsWith(_repoPrefix))
             {
-                return _tagSuffix.TrimStart('-');
+                resolvedRepo = $"{_repoPrefix}/{repo}";
             }
 
-            return _tagSuffix;
+            // Resolved tag names in different scenarios
+            // Ex: oryx/build           => latest
+            // Ex: oryx/build:latest    => latest
+            // Ex: oryx/build           => 20191003.1
+            // Ex: oryx/build:latest    => 20191003.1
+            // Ex: oryx/build:latest    => 20191003.1-patch1
+            // Ex: oryx/build:slim      => slim
+            // Ex: oryx/build:slim      => slim-20191003.1
+            // Ex: oryx/build:slim      => slim-20191003.1-patch1
+            string resolvedTag = null;
+            if (string.IsNullOrEmpty(tag) || tag == "latest")
+            {
+                resolvedTag = string.IsNullOrEmpty(_releaseName) ? "latest" : _releaseName;
+            }
+            else
+            {
+                resolvedTag = string.IsNullOrEmpty(_releaseName) ? tag : $"{tag}-{_releaseName}";
+            }
+
+            var finalImageName = $"{resolvedRepo}:{resolvedTag}";
+            return finalImageName;
+        }
+
+        private void Initialize(ITestOutputHelper ouputHelper, string repoPrefix, string releaseName)
+        {
+            _output = ouputHelper;
+            if (string.IsNullOrEmpty(repoPrefix))
+            {
+                _output?.WriteLine(
+                    $"No value provided for '{nameof(repoPrefix)}', " +
+                    $"using default repo prefix '{_defaultRepoPrefix}'.");
+                repoPrefix = _defaultRepoPrefix;
+            }
+
+            _repoPrefix = repoPrefix;
+            _repoPrefix = _repoPrefix.Trim('/');
+
+            var lastIndex = _repoPrefix.LastIndexOf("/oryx");
+            if (lastIndex >= 0)
+            {
+                _repoPrefix = _repoPrefix.Remove(lastIndex);
+            }
+
+            if (string.IsNullOrEmpty(releaseName))
+            {
+                _output?.WriteLine("No value provided for release name, no suffix will be added to image tags.");
+            }
+
+            _releaseName = releaseName;
         }
     }
 }

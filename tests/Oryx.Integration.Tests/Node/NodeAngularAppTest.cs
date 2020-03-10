@@ -53,7 +53,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 4200,
                 "/bin/sh",
                 new[]
@@ -105,7 +105,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 4200,
                 "/bin/sh",
                 new[]
@@ -124,7 +124,7 @@ namespace Microsoft.Oryx.Integration.Tests
             for (var i = 0; i < 5; i++)
             {
                 await EndToEndTestHelper.RunAndAssertAppAsync(
-                    imageName: _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                    imageName: _imageHelper.GetRuntimeImage("node", nodeVersion),
                     output: _output,
                     volumes: new List<DockerVolume> { appOutputDirVolume, volume },
                     environmentVariables: new List<EnvironmentVariable>(),
@@ -174,7 +174,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 4200,
                 "/bin/sh",
                 new[]
@@ -224,7 +224,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 4200,
                 "/bin/sh",
                 new[]

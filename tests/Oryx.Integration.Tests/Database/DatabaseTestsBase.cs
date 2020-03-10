@@ -61,10 +61,10 @@ namespace Microsoft.Oryx.Integration.Tests
             var script = scriptBuilder.AddCommand(entrypointScript)
                 .ToString();
 
-            var runtimeImageName = _imageHelper.GetTestRuntimeImage(language, languageVersion);
+            var runtimeImageName = _imageHelper.GetRuntimeImage(language, languageVersion);
             if (string.Equals(language, "nodejs", StringComparison.OrdinalIgnoreCase))
             {
-                runtimeImageName = _imageHelper.GetTestRuntimeImage("node", languageVersion);
+                runtimeImageName = _imageHelper.GetRuntimeImage("node", languageVersion);
             }
 
             string link = $"{_dbFixture.DbServerContainerName}:{Constants.InternalDbLinkName}";
