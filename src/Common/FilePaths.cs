@@ -10,6 +10,6 @@ namespace Microsoft.Oryx.Common
         public const string NodeAppInsightsLoaderFileName = "applicationinsights/out/Bootstrap/Oryx.js";
         public const string NodeGlobalModulesPath = "/usr/local/lib/node_modules";
         public const string Bash = "/bin/bash";
-        public const string Benv = "/opt/oryx/benv";
+        public const string Benv = "benv";
     }
 }
