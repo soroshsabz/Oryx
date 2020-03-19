@@ -39,23 +39,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
             var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
             var sourceRepoProvider = serviceProvider.GetRequiredService<ISourceRepoProvider>();
-            var envSettings = serviceProvider.GetRequiredService<CliEnvironmentSettings>();
 
             return new BuildScriptGeneratorContext
             {
                 OperationId = operationId,
                 SourceRepo = sourceRepoProvider.GetSourceRepo(),
-                Language = options.PlatformName,
-                LanguageVersion = options.PlatformVersion,
-                IsPackage = options.ShouldPackage,
-                RequiredOsPackages = options.RequiredOsPackages,
                 Properties = options.Properties,
-                EnableCheckers = !envSettings.DisableCheckers,
-                EnableDotNetCore = !envSettings.DisableDotNetCore,
-                EnableNodeJs = !envSettings.DisableNodeJs,
-                EnablePython = !envSettings.DisablePython,
-                EnablePhp = !envSettings.DisablePhp,
-                DisableMultiPlatformBuild = envSettings.DisableMultiPlatformBuild,
                 ManifestDir = options.ManifestDir,
             };
         }

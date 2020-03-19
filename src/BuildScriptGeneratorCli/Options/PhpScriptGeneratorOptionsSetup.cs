@@ -5,21 +5,20 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using Microsoft.Oryx.BuildScriptGenerator.Node;
+using Microsoft.Oryx.BuildScriptGenerator.Php;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
 {
-    public class NodeScriptGeneratorOptionsSetup : OptionsSetupBase, IConfigureOptions<NodeScriptGeneratorOptions>
+    public class PhpScriptGeneratorOptionsSetup : OptionsSetupBase, IConfigureOptions<PhpScriptGeneratorOptions>
     {
-        public NodeScriptGeneratorOptionsSetup(IConfiguration configuration)
+        public PhpScriptGeneratorOptionsSetup(IConfiguration configuration) 
             : base(configuration)
         {
         }
 
-        public void Configure(NodeScriptGeneratorOptions options)
+        public void Configure(PhpScriptGeneratorOptions options)
         {
-            options.NodeVersion = GetStringValue(SettingsKeys.NodeVersion);
-            options.CustomNpmRunBuildCommand = GetStringValue(SettingsKeys.CustomNpmRunBuildCommand);
+            options.PhpVersion = GetStringValue(SettingsKeys.PhpVersion);
         }
     }
 }

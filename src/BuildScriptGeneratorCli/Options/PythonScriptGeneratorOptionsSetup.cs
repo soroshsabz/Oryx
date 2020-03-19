@@ -5,21 +5,21 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using Microsoft.Oryx.BuildScriptGenerator.Node;
+using Microsoft.Oryx.BuildScriptGenerator.Python;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
 {
-    public class NodeScriptGeneratorOptionsSetup : OptionsSetupBase, IConfigureOptions<NodeScriptGeneratorOptions>
+    public class PythonScriptGeneratorOptionsSetup : OptionsSetupBase, IConfigureOptions<PythonScriptGeneratorOptions>
     {
-        public NodeScriptGeneratorOptionsSetup(IConfiguration configuration)
+        public PythonScriptGeneratorOptionsSetup(IConfiguration configuration) 
             : base(configuration)
         {
         }
 
-        public void Configure(NodeScriptGeneratorOptions options)
+        public void Configure(PythonScriptGeneratorOptions options)
         {
-            options.NodeVersion = GetStringValue(SettingsKeys.NodeVersion);
-            options.CustomNpmRunBuildCommand = GetStringValue(SettingsKeys.CustomNpmRunBuildCommand);
+            options.PythonVersion = GetStringValue(SettingsKeys.PythonVersion);
+            options.DisableCollectStatic = GetBooleanValue(SettingsKeys.DisableCollectStatic);
         }
     }
 }
