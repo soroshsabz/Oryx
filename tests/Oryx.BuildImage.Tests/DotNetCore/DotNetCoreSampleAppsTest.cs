@@ -815,10 +815,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void Builds_DotNet50App()
         {
             // Arrange
-            var appName = "NetCoreApp31.MvcApp";
+            var appName = "dotnet50.MvcApp";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
-            var appOutputDir = "/tmp/NetCoreApp31MvcApp-output";
+            var appOutputDir = "/tmp/dotnet50.MvcApp-output";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
