@@ -178,7 +178,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                         runBuildCommand = string.Format(NodeConstants.PkgMgrRunBuildCommandTemplate, packageManagerCmd);
                     }
 
-                    if (scriptsNode["build:azure"] != null && !ctx.IsPackage)
+                    if (scriptsNode["build:azure"] != null && !_commonOptions.ShouldPackage)
                     {
                         runBuildAzureCommand = string.Format(
                             NodeConstants.PkgMgrRunBuildAzureCommandTemplate,
@@ -190,13 +190,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             if (packageJson?.dependencies != null)
             {
                 var depSpecs = ((JObject)packageJson.dependencies).ToObject<IDictionary<string, string>>();
-                _logger.LogDependencies(ctx.Language, ctx.NodeVersion, depSpecs.Select(d => d.Key + d.Value));
+                _logger.LogDependencies(
+                    _commonOptions.PlatformName,
+                    ctx.NodeVersion,
+                    depSpecs.Select(d => d.Key + d.Value));
             }
 
             if (packageJson?.devDependencies != null)
             {
                 var depSpecs = ((JObject)packageJson.devDependencies).ToObject<IDictionary<string, string>>();
-                _logger.LogDependencies(ctx.Language, ctx.NodeVersion, depSpecs.Select(d => d.Key + d.Value), true);
+                _logger.LogDependencies(
+                    _commonOptions.PlatformName,
+                    ctx.NodeVersion,
+                    depSpecs.Select(d => d.Key + d.Value), true);
             }
 
             string compressNodeModulesCommand = null;
@@ -241,7 +247,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 AppInsightsPackageName = NodeConstants.NodeAppInsightsPackageName,
                 AppInsightsLoaderFileName = NodeAppInsightsLoader.NodeAppInsightsLoaderFileName,
                 PackageInstallerVersionCommand = packageInstallerVersionCommand,
-                RunNpmPack = ctx.IsPackage,
+                RunNpmPack = _commonOptions.ShouldPackage,
                 CustomNpmRunBuildCommand = _nodeScriptGeneratorOptions.CustomNpmRunBuildCommand,
             };
 

@@ -22,20 +22,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     /// </summary>
     internal class DefaultBuildScriptGenerator : IBuildScriptGenerator
     {
-        private readonly BuildScriptGeneratorOptions _cliOptions;
+        private readonly BuildScriptGeneratorOptions _commonOptions;
         private readonly ICompatiblePlatformDetector _platformDetector;
         private readonly IEnumerable<IChecker> _checkers;
         private readonly ILogger<DefaultBuildScriptGenerator> _logger;
         private readonly IStandardOutputWriter _writer;
 
         public DefaultBuildScriptGenerator(
-            IOptions<BuildScriptGeneratorOptions> cliOptions,
+            IOptions<BuildScriptGeneratorOptions> commonOptions,
             ICompatiblePlatformDetector platformDetector,
             IEnumerable<IChecker> checkers,
             ILogger<DefaultBuildScriptGenerator> logger,
             IStandardOutputWriter writer)
         {
-            _cliOptions = cliOptions.Value;
+            _commonOptions = commonOptions.Value;
             _platformDetector = platformDetector;
             _logger = logger;
             _checkers = checkers;
@@ -67,7 +67,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 timedEvent.SetProperties(toolsToVersion);
             }
 
-            if (_checkers != null && checkerMessageSink != null && _cliOptions.EnableCheckers)
+            if (_checkers != null && checkerMessageSink != null && !_commonOptions.DisableCheckers)
             {
                 try
                 {
@@ -82,8 +82,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             else
             {
                 _logger.LogInformation("Not running checkers - condition evaluates to " +
-                                       "({checkersNotNull} && {sinkNotNull} && {enableCheckers})",
-                                       _checkers != null, checkerMessageSink != null, context.EnableCheckers);
+                                       "({checkersNotNull} && {sinkNotNull} && {disableCheckers})",
+                                       _checkers != null, checkerMessageSink != null, _commonOptions.DisableCheckers);
             }
 
             if (snippets != null)
@@ -121,7 +121,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public IDictionary<IProgrammingPlatform, string> GetCompatiblePlatforms(BuildScriptGeneratorContext ctx)
         {
-            return _platformDetector.GetCompatiblePlatforms(ctx, ctx.Language, ctx.LanguageVersion);
+            return _platformDetector.GetCompatiblePlatforms(
+                ctx,
+                _commonOptions.PlatformName,
+                _commonOptions.PlatformVersion);
         }
 
         public IDictionary<string, string> GetRequiredToolVersions(BuildScriptGeneratorContext ctx)
@@ -245,19 +248,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             (var preBuildCommand, var postBuildCommand) = PreAndPostBuildCommandHelper.GetPreAndPostBuildCommands(
                 context.SourceRepo,
-                _cliOptions);
+                _commonOptions);
 
             var outputIsSubDirOfSourceDir = false;
-            if (!string.IsNullOrEmpty(_cliOptions.DestinationDir))
+            if (!string.IsNullOrEmpty(_commonOptions.DestinationDir))
             {
                 outputIsSubDirOfSourceDir = DirectoryHelper.IsSubDirectory(
-                    _cliOptions.DestinationDir,
-                    _cliOptions.SourceDir);
+                    _commonOptions.DestinationDir,
+                    _commonOptions.SourceDir);
             }
 
             var buildScriptProps = new BaseBashBuildScriptProperties()
             {
-                OsPackagesToInstall = context.RequiredOsPackages ?? new string[0],
+                OsPackagesToInstall = _commonOptions.RequiredOsPackages ?? new string[0],
                 BuildScriptSnippets = snippets.Select(s => s.BashBuildScriptSnippet),
                 BenvArgs = benvArgs,
                 PreBuildCommand = preBuildCommand,
