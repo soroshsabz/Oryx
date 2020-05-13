@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <FilesToSign Include="$(OutDir)\Microsoft.Oryx.BuildScriptGenerator.nupkg;$(OutDir)\Microsoft.Oryx.BuildScriptGeneratorCli.nupkg;">
-      <Authenticode>NuGet401405</Authenticode>
+      <Authenticode>NuGet</Authenticode>
     </FilesToSign>
   </ItemGroup>
 
