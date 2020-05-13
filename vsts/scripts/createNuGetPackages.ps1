@@ -9,13 +9,14 @@ function DeleteItem($pathToRemove) {
     }
 }
 
-$version="0.2.0"
+$version="0.2.0-$BUILD_BUILDNUMBER"
 $buildScriptGeneratorName="Microsoft.Oryx.BuildScriptGenerator"
 $buildScriptGeneratorCliName="Microsoft.Oryx.BuildScriptGenerator.Cli"
 $repoRoot="$PSScriptRoot\..\.."
 $artifactsPackagesDir="$repoRoot\artifacts\packages"
 
 cd "$artifactsPackagesDir"
+dir
 
 # Delete any existing directory and zip file. Could have been from an earlier build.
 DeleteItem "$buildScriptGeneratorName"
