@@ -8,7 +8,7 @@ function DeleteItem($pathToRemove) {
         Remove-Item -Recurse -Force -Path "$pathToRemove"
     }
 }
-
+ls env:
 $version="0.2.0-$BUILD_BUILDNUMBER"
 $buildScriptGeneratorName="Microsoft.Oryx.BuildScriptGenerator"
 $buildScriptGeneratorCliName="Microsoft.Oryx.BuildScriptGenerator.Cli"
