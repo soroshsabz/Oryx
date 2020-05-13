@@ -83,41 +83,6 @@ steps:
     msbuildArgs: '/t:SignFiles /p:MicroBuild_SigningEnabled=true'
   condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
 
-- task: EsrpCodeSigning@1
-  displayName: 'Sign NuGet packages'
-  inputs:
-    ConnectedServiceName: 'CodeSigning-APEX'
-    FolderPath: 'artifacts\packages'
-    Pattern: '*.nupkg'
-    signConfigType: inlineSignParams
-    inlineOperation: |
-     [
-             {
-                 "KeyCode" : "CP-401405",
-                 "OperationSetCode" : "NuGetSign",
-                 "Parameters" : [
-                    {
-                      "parameterName": "TimeStamp",
-                      "parameterValue": "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
-                    },
-                    {
-                      "parameterName": "FileDigest",
-                      "parameterValue": "/fd \"SHA256\""
-                    }
-                 ],
-                 "ToolName" : "sign",
-                 "ToolVersion" : "1.0"
-             },
-             {
-                 "KeyCode" : "CP-401405",
-                 "OperationSetCode" : "NuGetVerify",
-                 "Parameters" : [],
-                 "ToolName" : "sign",
-                 "ToolVersion" : "1.0"
-             }
-      ]
-    SessionTimeout: 20
-
 - powershell: |
     Copy-Item -Path artifacts\packages -Destination $(Build.ArtifactStagingDirectory)\packages -Recurse
   displayName: 'Copying nuget packages to artifact staging directory'
