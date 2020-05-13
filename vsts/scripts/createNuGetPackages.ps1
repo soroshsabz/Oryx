@@ -12,7 +12,7 @@ function DeleteItem($pathToRemove) {
 $version="0.2.0"
 $buildScriptGeneratorName="Microsoft.Oryx.BuildScriptGenerator"
 $buildScriptGeneratorCliName="Microsoft.Oryx.BuildScriptGenerator.Cli"
-$repoRoot=Split-Path -parent $PSScriptRoot
+$repoRoot="$PSScriptRoot\..\.."
 $artifactsPackagesDir="$repoRoot\artifacts\packages"
 
 cd "$artifactsPackagesDir"
