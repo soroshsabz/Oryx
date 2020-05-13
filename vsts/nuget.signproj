@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <FilesToSign Include="$(OutDir)\Microsoft.Oryx.BuildScriptGenerator.0.2.0-$(BUILD_BUILDNUMBER).nupkg;$(OutDir)\Microsoft.Oryx.BuildScriptGeneratorCli.0.2.0-$(BUILD_BUILDNUMBER).nupkg;">
+    <FilesToSign Include="$(OutDir)\Microsoft.Oryx.BuildScriptGenerator.0.2.0-$(BUILD_BUILDNUMBER).nupkg;$(OutDir)\Microsoft.Oryx.BuildScriptGenerator.Cli.0.2.0-$(BUILD_BUILDNUMBER).nupkg;">
       <Authenticode>NuGet</Authenticode>
     </FilesToSign>
   </ItemGroup>
