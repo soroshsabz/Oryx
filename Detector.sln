@@ -11,6 +11,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Detector.Tests", "tests\Det
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Detector", "src\Detector\Detector\Detector.csproj", "{5D31D198-686C-4092-9F78-918D2182F130}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CommonFiles", "CommonFiles", "{D3825A5E-6BCF-44C8-BDDD-BC4713A6CFD8}"
+	ProjectSection(SolutionItems) = preProject
+		src\Detector\CommonFiles\AssemblyVersion.proj = src\Detector\CommonFiles\AssemblyVersion.proj
+		src\Detector\CommonFiles\General.targets = src\Detector\CommonFiles\General.targets
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +38,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{4BD79C5B-234C-42CA-BC39-BACA3DDD187C} = {E6E8454C-856D-46F6-B8B6-EC45134F10C4}
 		{5D31D198-686C-4092-9F78-918D2182F130} = {D345F828-14DC-4F09-9A00-9F598F596308}
+		{D3825A5E-6BCF-44C8-BDDD-BC4713A6CFD8} = {D345F828-14DC-4F09-9A00-9F598F596308}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5C34897D-E9F7-4DB3-9DFC-4F84CC76EA67}
