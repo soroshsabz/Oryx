@@ -1,7 +1,7 @@
 using System;
 using Xunit;
 
-namespace BuildScriptGeneratorNuGetPackage.Tests
+namespace Microsoft.Oryx.Detector.Tests
 {
     public class UnitTest1
     {

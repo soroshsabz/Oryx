@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
+    <AssemblyName>Microsoft.Oryx.Detector.Tests</AssemblyName>
+    <RootNamespace>Microsoft.Oryx.Detector.Tests</RootNamespace>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
@@ -16,7 +18,7 @@
     </PackageReference>
     <PackageReference Include="coverlet.collector" Version="1.2.0" />
     <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
-    <PackageReference Include="Microsoft.Oryx.BuildScriptGenerator" Version="0.2.0-*" />
+    <PackageReference Include="Microsoft.Oryx.Detector" Version="1.0.0-*" />
   </ItemGroup>
 
 </Project>
