@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <!-- The following is to enable copying the .dlls of referenced projects (ex: Microsoft.Oryx.Common here) as part
+    of the generated nuget package's "lib" foler -->
+    <TargetsForTfmSpecificBuildOutput>
+      $(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage
+    </TargetsForTfmSpecificBuildOutput>
+    <AssemblyName>Microsoft.Oryx.Detector</AssemblyName>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Microsoft Oryx</Authors>
+    <Company>Microsoft</Company>
+    <RepositoryUrl>https://github.com/microsoft/oryx</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+
+  <Import Project="$(MSBuildThisFileDirectory)\..\CommonFiles\AssemblyVersion.proj" />
+  <Import Project="$(MSBuildThisFileDirectory)\..\CommonFiles\General.targets" />
+
+</Project>

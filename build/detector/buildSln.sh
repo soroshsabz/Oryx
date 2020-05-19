@@ -6,13 +6,15 @@
 
 set -e
 
-declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
+declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && pwd )
 
 # Load all variables
-source $REPO_DIR/build/__variables.sh
+source $REPO_DIR/build/detector/__variables.sh
+
+solutionFileName="Detector.sln"
 
 echo
-echo "Building solution..."
+echo "Building $solutionFileName..."
 echo
-cd $REPO_DIR
-dotnet build -c $BUILD_CONFIGURATION Oryx.sln
+cd $REPO_DIR/
+dotnet build -c $BUILD_CONFIGURATION $solutionFileName

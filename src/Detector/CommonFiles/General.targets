@@ -7,7 +7,7 @@
 
   <Target Name="CopyNuGetPackage" AfterTargets="GenerateNuspec">
     <PropertyGroup>
-      <ArtifactsPackagesDir>..\..\artifacts\packages</ArtifactsPackagesDir>
+      <ArtifactsPackagesDir>..\..\..\artifacts\packages</ArtifactsPackagesDir>
     </PropertyGroup>
 
     <ItemGroup>
