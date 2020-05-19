@@ -12,3 +12,4 @@ fi
 declare -r BUILD_CONFIGURATION="${BUILDCONFIGURATION:-Debug}"
 declare -r ARTIFACTS_DIR="$REPO_DIR/artifacts"
 declare -r ARTIFACTS_NUGET_PACKAGES_DIR="$ARTIFACTS_DIR/packages"
+declare -r TESTS_SRC_DIR="$REPO_DIR/tests"
