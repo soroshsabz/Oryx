@@ -44,13 +44,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         public const string AzureFunctionsPackageReference = "Microsoft.NET.Sdk.Functions";
 
-        public static readonly string DefaultDotNetCoreRuntimeVersionsInstallDir = $"/opt/{PlatformName}/runtimes";
-        public static readonly string DefaultDotNetCoreSdkVersionsInstallDir = $"/opt/{PlatformName}/sdks";
-
-        public static readonly string DynamicDotNetCoreRuntimeVersionsInstallDir
-            = $"{Constants.TemporaryInstallationDirectoryRoot}/{PlatformName}/runtimes";
+        public static readonly string DefaultDotNetCoreSdkVersionsInstallDir = $"/opt/{PlatformName}";
         public static readonly string DynamicDotNetCoreSdkVersionsInstallDir
-            = $"{Constants.TemporaryInstallationDirectoryRoot}/{PlatformName}/sdks";
+            = $"{Constants.TemporaryInstallationDirectoryRoot}/{PlatformName}";
 
         public const string StorageSdkMetadataRuntimeVersionElementName = "Runtime_version";
         public const string StorageSdkMetadataSdkVersionElementName = "Version";

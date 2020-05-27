@@ -44,10 +44,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                     sdkVersion);
             }
 
-            var dirToInstall =
-                $"{DotNetCoreConstants.DynamicDotNetCoreSdkVersionsInstallDir}/{sdkVersion}";
-            var sentinelFileDir =
-                $"{DotNetCoreConstants.DynamicDotNetCoreRuntimeVersionsInstallDir}/{runtimeVersion}";
+            var dirToInstall = DotNetCoreConstants.DynamicDotNetCoreSdkVersionsInstallDir;
+            var sentinelFileDir = $"{dirToInstall}/sdk";
 
             var sdkInstallerScript = GetInstallerScriptSnippet(
                 DotNetCoreConstants.PlatformName,
@@ -58,8 +56,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             var scriptBuilder = new StringBuilder();
             scriptBuilder
             .AppendLine(sdkInstallerScript)
-            .AppendLine($"mkdir -p {DotNetCoreConstants.DynamicDotNetCoreRuntimeVersionsInstallDir}/{runtimeVersion}")
-            .AppendLine($"echo '{sdkVersion}' > {DotNetCoreConstants.DynamicDotNetCoreRuntimeVersionsInstallDir}/{runtimeVersion}/sdkVersion.txt")
             // Write out a sentinel file to indicate downlaod and extraction was successful
             .AppendLine($"echo > {sentinelFileDir}/{SdkStorageConstants.SdkDownloadSentinelFileName}");
             return scriptBuilder.ToString();
@@ -71,8 +67,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             {
                 return IsVersionInstalled(
                     runtimeVersion,
-                    builtInDir: DotNetCoreConstants.DefaultDotNetCoreRuntimeVersionsInstallDir,
-                    dynamicInstallDir: DotNetCoreConstants.DynamicDotNetCoreRuntimeVersionsInstallDir);
+                    builtInDir: $"{DotNetCoreConstants.DefaultDotNetCoreSdkVersionsInstallDir}/sdk",
+                    dynamicInstallDir: $"{DotNetCoreConstants.DynamicDotNetCoreSdkVersionsInstallDir}/sdk");
             }
             else
             {
