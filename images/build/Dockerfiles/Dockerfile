@@ -207,7 +207,6 @@ WORKDIR /
 # Copy .NET Core related content
 COPY --from=dotnet-install /opt/dotnet /opt/dotnet
 COPY --from=dotnet-install /var/nuget /var/nuget
-RUN cp ${IMAGES_DIR}/build/dotNetCoreAll.Readme.md /opt/dotnet/Readme.md
 
 # Copy NodeJs, NPM and Yarn related content
 COPY --from=node-install /opt /opt

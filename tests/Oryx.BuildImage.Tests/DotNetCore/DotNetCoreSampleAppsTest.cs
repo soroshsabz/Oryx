@@ -347,7 +347,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    var dotnetExecutable = $"/opt/dotnet/sdks/{DotNetCoreSdkVersions.DotNetCore21SdkVersion}/dotnet";
+                    var dotnetExecutable = $"/opt/dotnet/dotnet";
                     Assert.Matches($"Pre-build script: {dotnetExecutable}", result.StdOut);
                     Assert.Matches($"Post-build script: {dotnetExecutable}", result.StdOut);
                 },
@@ -637,46 +637,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.Contains(
                         string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNetCore21SdkVersion),
                         result.StdOut);
-                },
-                result.GetDebugInfo());
-        }
-
-        [Theory]
-        [InlineData(DotNetCoreSdkVersions.DotNetCore11SdkVersion)]
-        [InlineData(DotNetCoreSdkVersions.DotNetCore21SdkVersion)]
-        [InlineData(DotNetCoreSdkVersions.DotNetCore22SdkVersion)]
-        [InlineData(DotNetCoreSdkVersions.DotNetCore30SdkVersion)]
-        [InlineData(DotNetCoreSdkVersions.DotNetCore31SdkVersion)]
-        public void DotNetCore_Muxer_ChoosesAppropriateSDKVersion(string sdkversion)
-        {
-            // Arrange
-            var appDir = "/tmp/app1";
-            var flattenedDotNetInstallDir = "/opt/dotnet/all";
-            var script = new ShellScriptBuilder()
-                .SetEnvironmentVariable("PATH", $"{flattenedDotNetInstallDir}:$PATH")
-                .AddCommand($"mkdir -p {appDir} && cd {appDir}")
-                .AddCommand($"dotnet new globaljson --sdk-version {sdkversion}")
-                .AddCommand("dotnet --version")
-                .AddCommand("which dotnet")
-                .ToString();
-
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = Settings.BuildImageName,
-                EnvironmentVariables = new List<EnvironmentVariable>(),
-                Volumes = Enumerable.Empty<DockerVolume>(),
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", script }
-            });
-
-            // Assert
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                    Assert.Contains(sdkversion, result.StdOut);
-                    Assert.Contains($"{flattenedDotNetInstallDir}/dotnet", result.StdOut);
                 },
                 result.GetDebugInfo());
         }
