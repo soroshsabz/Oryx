@@ -28,7 +28,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             return defaultRuntimeVersion;
         }
 
-        public Dictionary<string, string> GetSupportedVersions()
+        public IEnumerable<string> GetSupportedVersions()
         {
             var versionMap = new Dictionary<string, string>();
 
@@ -38,27 +38,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
             var installedRuntimeVersions = VersionProviderHelper.GetVersionsFromDirectory(
                         DotNetCoreConstants.DefaultDotNetCoreRuntimeVersionsInstallDir);
-            foreach (var runtimeVersion in installedRuntimeVersions)
-            {
-                var runtimeDir = Path.Combine(
-                    DotNetCoreConstants.DefaultDotNetCoreRuntimeVersionsInstallDir,
-                    runtimeVersion);
-                var sdkVersionFile = Path.Combine(runtimeDir, "sdkVersion.txt");
-                if (!File.Exists(sdkVersionFile))
-                {
-                    throw new InvalidOperationException($"Could not find file '{sdkVersionFile}'.");
-                }
-
-                var sdkVersion = File.ReadAllText(sdkVersionFile);
-                if (string.IsNullOrEmpty(sdkVersion))
-                {
-                    throw new InvalidOperationException("Sdk version cannot be empty.");
-                }
-
-                versionMap[runtimeVersion] = sdkVersion.Trim();
-            }
-
-            return versionMap;
+            return installedRuntimeVersions;
         }
     }
 }

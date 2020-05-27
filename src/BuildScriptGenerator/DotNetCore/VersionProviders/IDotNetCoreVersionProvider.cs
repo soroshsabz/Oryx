@@ -14,7 +14,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         /// The keys represent 'runtime' version, whereas the values represent 'sdk version'.
         /// </summary>
         /// <returns></returns>
-        Dictionary<string, string> GetSupportedVersions();
+        IEnumerable<string> GetSupportedVersions();
 
         string GetDefaultRuntimeVersion();
     }
