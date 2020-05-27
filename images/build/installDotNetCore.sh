@@ -16,50 +16,24 @@ echo
 fileName="dotnet.tar.gz"
 downloadFileAndVerifyChecksum dotnet $DOTNET_SDK_VER $fileName
 
-globalJsonContent="{\"sdk\":{\"version\":\"$DOTNET_SDK_VER\"}}"
-
-# If the version is a preview version, then trim out the preview part
-# Example: 3.0.100-preview4-011223 will be changed to 3.0.100
-DOTNET_SDK_VER=${DOTNET_SDK_VER%%-*}
-
-SDK_DIR=/opt/dotnet/sdks
-DOTNET_DIR=$SDK_DIR/$DOTNET_SDK_VER
+DOTNET_DIR="/opt/dotnet"
 mkdir -p $DOTNET_DIR
 tar -xzf $fileName -C $DOTNET_DIR
 rm $fileName
-
-# Create a link : major.minor => major.minor.path
-IFS='.' read -ra SDK_VERSION_PARTS <<< "$DOTNET_SDK_VER"
-MAJOR_MINOR="${SDK_VERSION_PARTS[0]}.${SDK_VERSION_PARTS[1]}"
-echo
-echo "Created link from $MAJOR_MINOR to $DOTNET_SDK_VER"
-ln -s $DOTNET_SDK_VER $SDK_DIR/$MAJOR_MINOR
-
-dotnet=$SDK_DIR/$DOTNET_SDK_VER/dotnet
+dotnet="$DOTNET_DIR/dotnet"
 
 # Install MVC template based packages
 if [ "$INSTALL_PACKAGES" != "false" ]
 then
     echo
-    echo Installing MVC template based packages ...
-    mkdir warmup
-    cd warmup
+    echo Installing MVC template based packages...
+    sampleAppDir="/tmp/warmup"
+    mkdir "$sampleAppDir"
+    cd "$sampleAppDir"
+    globalJsonContent="{\"sdk\":{\"version\":\"$DOTNET_SDK_VER\"}}"
     echo "$globalJsonContent" > global.json
     $dotnet new mvc
     $dotnet restore
     cd ..
-    rm -rf warmup
-fi
-
-if [ "$INSTALL_TOOLS" == "true" ]; then
-    toolsDir="$SDK_DIR/$DOTNET_SDK_VER/tools"
-    mkdir -p "$toolsDir"
-    dotnet tool install --tool-path "$toolsDir" dotnet-sos
-    chmod +x "$toolsDir/dotnet-sos"
-    dotnet tool install --tool-path "$toolsDir" dotnet-trace
-    chmod +x "$toolsDir/dotnet-trace"
-    dotnet tool install --tool-path "$toolsDir" dotnet-dump
-    chmod +x "$toolsDir/dotnet-dump"
-    dotnet tool install --tool-path "$toolsDir" dotnet-counters
-    chmod +x "$toolsDir/dotnet-counters"
+    rm -rf "$sampleAppDir"
 fi
