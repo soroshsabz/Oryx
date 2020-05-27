@@ -108,45 +108,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData("1", DotNetCoreSdkVersions.DotNetCore11SdkVersion)]
-        [InlineData("1.0", DotNetCoreSdkVersions.DotNetCore11SdkVersion)]
-        [InlineData("1.1", DotNetCoreSdkVersions.DotNetCore11SdkVersion)]
-        [InlineData("2", DotNetCoreSdkVersions.DotNetCore21SdkVersion)]
-        [InlineData("2.0", DotNetCoreSdkVersions.DotNetCore21SdkVersion)]
-        [InlineData("2.1", DotNetCoreSdkVersions.DotNetCore21SdkVersion)]
-        [InlineData("lts", DotNetCoreSdkVersions.DotNetCore31SdkVersion)]
-        [InlineData("2.2", DotNetCoreSdkVersions.DotNetCore22SdkVersion)]
-        [InlineData("3", DotNetCoreSdkVersions.DotNetCore31SdkVersion)]
-        [InlineData("3.0", DotNetCoreSdkVersions.DotNetCore30SdkVersion)]
-        [InlineData("3.1", DotNetCoreSdkVersions.DotNetCore31SdkVersion)]
-        public void DotNetAlias_UsesVersion_SetOnBenv(string runtimeVersion, string expectedSdkVersion)
-        {
-            // Arrange
-            var script = new ShellScriptBuilder()
-                .Source($"benv dotnet={runtimeVersion}")
-                .AddCommand("dotnet --version")
-                .ToString();
-
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = Settings.BuildImageName,
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", script }
-            });
-
-            // Assert
-            var actualOutput = result.StdOut.ReplaceNewLine();
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                    Assert.Equal(expectedSdkVersion, actualOutput);
-                },
-                result.GetDebugInfo());
-        }
-
-        [Theory]
         [InlineData(Settings.BuildImageName)]
         [InlineData(Settings.LtsVersionsBuildImageName)]
         public void Node_UsesLTSVersion_ByDefault_WhenNoExplicitVersionIsProvided(string buildImageName)
@@ -468,84 +429,15 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Trait("platform", "dotnet")]
-        [Theory]
-        [InlineData("DotNet", "dotnet")]
-        [InlineData("dotnet", "dotNet")]
-        [InlineData("DOTNET_VERSION", "DOTNET_VERSION")]
-        [InlineData("dotnet_version", "dotnet_version")]
-        public void DotNetAlias_UsesVersionSetOnBenvArgument_OverVersionSetInEnvironmentVariable(
-            string environmentVariableName,
-            string argumentName)
-        {
-            // Arrange
-            var expectedOutput = DotNetCoreSdkVersions.DotNetCore11SdkVersion;
-            var script = new ShellScriptBuilder()
-                .SetEnvironmentVariable(environmentVariableName, "3")
-                .Source($"benv {argumentName}=1")
-                .AddCommand("dotnet --version")
-                .ToString();
-
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = Settings.BuildImageName,
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", script }
-            });
-
-            // Assert
-            var actualOutput = result.StdOut.ReplaceNewLine();
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                    Assert.Equal(expectedOutput, actualOutput);
-                },
-                result.GetDebugInfo());
-        }
-
-        [Trait("platform", "dotnet")]
-        [Fact]
-        public void RunningBenvMultipleTimes_HonorsLastRunArguments()
-        {
-            // Arrange
-            var expectedOutput = DotNetCoreSdkVersions.DotNetCore11SdkVersion;
-            var script = new ShellScriptBuilder()
-                .Source("benv dotnet=3")
-                .Source("benv dotnet_version=1")
-                // benv should update the PATH environment in such a way that we should version 1
-                .AddCommand("dotnet --version")
-                .ToString();
-
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = Settings.BuildImageName,
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", script }
-            });
-
-            // Assert
-            var actualOutput = result.StdOut.ReplaceNewLine();
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                    Assert.Equal(expectedOutput, actualOutput);
-                },
-                result.GetDebugInfo());
-        }
-
         [Fact]
         public void BenvShouldSetUpEnviroment_WhenMultiplePlatforms_AreSuppliedAsArguments()
         {
             // Arrange
-            var expectedDotNetVersion = DotNetCoreSdkVersions.DotNetCore11SdkVersion;
+            var expectedNodeVersion = NodeVersions.Node12Version;
             var expectedPythonVersion = Python36VersionInfo;
             var script = new ShellScriptBuilder()
-                .Source("benv dotnet=1 python=3.6")
-                .AddCommand("dotnet --version")
+                .Source("benv node=12 python=3.6")
+                .AddCommand("node --version")
                 .AddCommand("python --version")
                 .ToString();
 
@@ -563,7 +455,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(expectedDotNetVersion, actualOutput);
+                    Assert.Contains(expectedNodeVersion, actualOutput);
                     Assert.Contains(expectedPythonVersion, actualOutput);
                 },
                 result.GetDebugInfo());
@@ -573,10 +465,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void BenvShouldSetUpEnviroment_UsingExactNames()
         {
             // Arrange
-            var expectedDotNetVersion = DotNetCoreSdkVersions.DotNetCore31SdkVersion;
+            var expectedNodeVersion = NodeVersions.Node14Version;
             var script = new ShellScriptBuilder()
-                .Source("benv dotnet_foo=1")
-                .AddCommand("dotnet --version")
+                .Source("benv node_foo=12")
+                .AddCommand("node --version")
                 .ToString();
 
             // Act
@@ -593,7 +485,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(expectedDotNetVersion, actualOutput);
+                    Assert.Contains(expectedNodeVersion, actualOutput);
                 },
                 result.GetDebugInfo());
         }
