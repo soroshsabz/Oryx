@@ -74,10 +74,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         {
             get
             {
-                var versionMap = _versionProvider.GetSupportedVersions();
-
-                // Map is from runtime version => sdk version
-                return versionMap.Keys;
+                return _versionProvider.GetSupportedVersions();
             }
         }
 
