@@ -18,9 +18,9 @@ matchesName() {
 # Read the environment variables to see if a value for these variables have been set.
 # If a variable was set as an environment variable AND as an argument to benv script, then the argument wins.
 # Example:
-#   export dotnet=1
-#   source benv dotnet=3
-#   dotnet --version (This should print version 3)
+#   export python=1
+#   source benv python=3
+#   python --version (This should print version 3)
 while read benvvar; do
   set -- "$benvvar" "$@"
 done < <(set | grep -i '^php=')
@@ -35,9 +35,6 @@ while read benvvar; do
 done < <(set | grep -i '^npm=')
 while read benvvar; do
   set -- "$benvvar" "$@"
-done < <(set | grep -i '^dotnet=')
-while read benvvar; do
-  set -- "$benvvar" "$@"
 done < <(set | grep -i '^hugo=')
 unset benvvar # Remove all traces of this part of the script
 
@@ -45,7 +42,7 @@ unset benvvar # Remove all traces of this part of the script
 # sdk versions can be picked up. Here we are trying to find the first occurrence of a path like '/opt/oryx'
 # and inserting a more specific provided path after it.
 # Example: (note that all Oryx related patlform paths come after the typical debian paths)
-# /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/oryx:/opt/nodejs/6/bin:/opt/dotnet/sdks/2.2.401
+# /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/oryx:/opt/nodejs/6/bin:/opt/dotnet
 updatePath() {
   if [ "$ORYX_PREFER_USER_INSTALLED_SDKS" == "true" ]
   then
@@ -59,22 +56,12 @@ updatePath() {
   fi
 }
 
-# NOTE: We handle .NET Core specially because there are 2 version types:
-# SDK version and Runtime version
-# For platforms other than dotnet, we look at a folder structure like '/opt/nodejs/10.14.1', but
-# for dotnet, it would be '/opt/dotnet/runtimes/10.14.1'
-# i.e Versioning of .NET Core is based on the runtime versions rather than sdk version
 benv-showSupportedVersionsErrorInfo() {
   local userPlatformName="$1"
   local platformDirName="$2"
   local userSuppliedVersion="$3"
   local builtInInstallDir="/opt/$platformDirName"
   local dynamicInstallDir="/tmp/oryx/platforms/$platformDirName"
-
-  if [ "$platformDirName" == "dotnet" ]; then
-    builtInInstallDir="$builtInInstallDir/runtimes"
-    dynamicInstallDir="$dynamicInstallDir/runtimes"
-  fi
 
   echo >&2 benv: "$userPlatformName" version \'$userSuppliedVersion\' not found.
   if [ ! -d "$builtInInstallDir" ] && [ ! -d "$dynamicInstallDir" ]; then
@@ -98,11 +85,6 @@ benv-getPlatformDir() {
   local builtInInstallDir="/opt/$platformDirName"
   local dynamicInstallDir="/tmp/oryx/platforms/$platformDirName"
   
-  if [ "$platformDirName" == "dotnet" ]; then
-    builtInInstallDir="$builtInInstallDir/runtimes"
-    dynamicInstallDir="$dynamicInstallDir/runtimes"
-  fi
-
   if [ -d "$builtInInstallDir/$userSuppliedVersion" ]; then
     echo "$builtInInstallDir/$userSuppliedVersion"
   elif [ -d "$dynamicInstallDir/$userSuppliedVersion" ]; then
@@ -220,27 +202,6 @@ benv-resolve() {
     updatePath "$DIR"
     export php="$DIR/php"
 
-    return 0
-  fi
-
-  # Resolve dotnet versions
-  if matchesName "dotnet" "$name" || matchesName "dotnet_version" "$name" && [ "${value::1}" != "/" ]; then
-    runtimeDir=$(benv-getPlatformDir "dotnet" "$value")
-    if [ "$runtimeDir" == "NotFound" ]; then
-      benv-showSupportedVersionsErrorInfo "dotnet" "dotnet" "$value"
-      return 1
-    fi
-
-    local sdkVersion=$(cat "$runtimeDir/sdkVersion.txt" | tr -d '\r') 
-    local SDK_DIR=$(cd "$runtimeDir/../../sdks/$sdkVersion" && pwd)
-    toolsDir="$SDK_DIR/tools"
-    if [ -d "$toolsDir" ]; then
-      updatePath "$SDK_DIR/tools"
-    fi
-
-    updatePath "$SDK_DIR"
-    export dotnet="$SDK_DIR/dotnet"
-    
     return 0
   fi
 
