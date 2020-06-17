@@ -114,7 +114,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             return result.Select(v => v.ToString()).ToList();
         }
 
-        internal override IServiceProvider GetServiceProvider(IConsole console)
+        internal IServiceProvider GetServiceProvider(IConsole console)
         {
             // NOTE: Order of the following is important. So a command line provided value has higher precedence
             // than the value provided in a configuration file of the repo.
