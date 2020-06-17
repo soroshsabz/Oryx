@@ -48,6 +48,11 @@ function tagBuildImage() {
         echo "Not creating 'latest' tag as source branch is not 'master'. Current branch is $sourceBranchName"
     fi
 
+    
+    echo "printing tags for PME ACR ..."
+    cat $outPmeFileMCR
+    echo "printing tags for Non PME ACR ..."
+    cat $outNonPmeFileMCR  
     echo -------------------------------------------------------------------------------
 }
 

@@ -66,3 +66,9 @@ while read sourceImage; do
     echo -------------------------------------------------------------------------------
   fi
 done <"$sourceFile"
+
+
+echo "printing tags for PME ACR ..."
+cat $outFilePmeMCR
+echo "printing tags for Non PME ACR ..."
+cat $outFileNonPmeMCR

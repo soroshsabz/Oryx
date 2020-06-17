@@ -38,3 +38,8 @@ if [ "$sourceBranchName" == "master" ]; then
 else
     echo "Not creating 'stable' or 'latest' tags as source branch is not 'master'. Current branch is $sourceBranchName"
 fi
+
+echo "printing tags for PME ACR ..."
+cat $outPmeFile
+echo "printing tags for Non PME ACR ..."
+cat $outNonPmeFile
