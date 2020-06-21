@@ -36,11 +36,11 @@ steps:
     version: 1.1.280
   condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
 
-- task: NuGetCommand@2
-  displayName: 'NuGet restore'
-  inputs:
-    restoreSolution: Oryx.sln
-  condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
+#- task: NuGetCommand@2
+#  displayName: 'NuGet restore'
+#  inputs:
+#    restoreSolution: Oryx.sln
+#  condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
 
 - powershell: |
     Write-Host "Setting up git_commit and build_number as env variable"
