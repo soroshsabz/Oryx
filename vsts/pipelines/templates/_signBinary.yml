@@ -27,10 +27,12 @@ steps:
     versionSpec: 5.5.x
   condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
 
-- task: ms-vseng.MicroBuildTasks.30666190-6959-11e5-9f96-f56098202fef.MicroBuildSigningPlugin@1
+- task: ms-vseng.MicroBuildTasks.30666190-6959-11e5-9f96-f56098202fef.MicroBuildSigningPlugin@2
   displayName: 'Install Signing Plugin'
   inputs:
     signType: '$(setSignTypeVariable.SignType)'
+    zipSources: false
+    version: 1.1.280
   condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
 
 - task: NuGetCommand@2
