@@ -1,7 +1,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(BUILD_ARTIFACTSTAGINGDIRECTORY)\MicroBuild\Plugins\MicroBuild.Plugins.Signing.1.1.280\build\MicroBuild.Plugins.Signing.props" />
 
-    <PropertyGroup>
+  <PropertyGroup>
     <SearchDir>**\bin\$(Configuration)\**</SearchDir>
     <OutDir>$(MSBuildThisFileDirectory)</OutDir>
     <IntermediateOutputPath>$(MSBuildThisFileDirectory)</IntermediateOutputPath>
