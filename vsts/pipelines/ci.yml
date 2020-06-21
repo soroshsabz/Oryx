@@ -43,7 +43,7 @@ stages:
     - job: Job_SignBinaries
       displayName: Sign Oryx Binaries
       pool:
-        name: VSEng-MicroBuildVS2017
+        name: VSEng-MicroBuildVS2019
         demands:
         - msbuild
         - visualstudio
