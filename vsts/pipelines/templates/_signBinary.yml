@@ -16,6 +16,11 @@ steps:
     echo $(setSignTypeVariable.SignType)
   name: SignType
 
+- task: UseDotNet@2
+  displayName: 'Use .NET Core sdk 3.1.x'
+  inputs:
+    version: 3.1.x
+    
 - task: NuGetToolInstaller@0
   displayName: 'Use NuGet 4.6.2'
   inputs:
@@ -33,11 +38,6 @@ steps:
   inputs:
     restoreSolution: Oryx.sln
   condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
-
-- task: UseDotNet@2
-  displayName: 'Use .NET Core sdk 3.1.x'
-  inputs:
-    version: 3.1.x
 
 - powershell: |
     Write-Host "Setting up git_commit and build_number as env variable"
