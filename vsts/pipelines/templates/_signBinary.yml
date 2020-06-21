@@ -4,11 +4,6 @@ steps:
   inputs:
     ignoreDirectories: '$(Build.SourcesDirectory)/tests'
 
-- task: UseDotNet@2
-  displayName: 'Use .NET Core sdk 3.1.x'
-  inputs:
-    version: 3.1.x
-
 - powershell: |
    Write-Host "##vso[task.setvariable variable=SignType;isOutput=true]real"
   name: setSignTypeVariable
@@ -32,7 +27,7 @@ steps:
    set NUGET_PLUGIN_HANDSHAKE_TIMEOUT_IN_SECONDS=20
    set NUGET_PLUGIN_REQUEST_TIMEOUT_IN_SECONDS=20
   displayName: 'Clear  NuGet http-cache and increase timeouts'
-  
+
 - task: ms-vseng.MicroBuildTasks.30666190-6959-11e5-9f96-f56098202fef.MicroBuildSigningPlugin@2
   displayName: 'Install Signing Plugin'
   inputs:
