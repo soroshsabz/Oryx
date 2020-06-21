@@ -4,6 +4,11 @@ steps:
   inputs:
     ignoreDirectories: '$(Build.SourcesDirectory)/tests'
 
+- task: UseDotNet@2
+  displayName: 'Use .NET Core sdk 3.1.x'
+  inputs:
+    version: 3.1.x
+        
 - powershell: |
    Write-Host "##vso[task.setvariable variable=SignType;isOutput=true]real"
   name: setSignTypeVariable
@@ -15,11 +20,6 @@ steps:
 - script: |
     echo $(setSignTypeVariable.SignType)
   name: SignType
-
-- task: UseDotNet@2
-  displayName: 'Use .NET Core sdk 3.1.x'
-  inputs:
-    version: 3.1.x
 
 - task: NuGetToolInstaller@1
   displayName: 'Use NuGet 5.5'
