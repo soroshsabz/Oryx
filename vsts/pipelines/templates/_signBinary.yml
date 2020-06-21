@@ -16,10 +16,15 @@ steps:
     echo $(setSignTypeVariable.SignType)
   name: SignType
 
-- task: NuGetToolInstaller@0
-  displayName: 'Use NuGet 4.6.2'
+- task: UseDotNet@2
+  displayName: 'Use .NET Core sdk 3.1.x'
   inputs:
-    versionSpec: 4.6.2
+    version: 3.1.x
+
+- task: NuGetToolInstaller@1
+  displayName: 'Use NuGet 5.5.x'
+  inputs:
+    versionSpec: 5.5.x
   condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
 
 - task: ms-vseng.MicroBuildTasks.30666190-6959-11e5-9f96-f56098202fef.MicroBuildSigningPlugin@1
@@ -33,11 +38,6 @@ steps:
   inputs:
     restoreSolution: Oryx.sln
   condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
-
-- task: UseDotNet@2
-  displayName: 'Use .NET Core sdk 3.1.x'
-  inputs:
-    version: 3.1.x
 
 - powershell: |
     Write-Host "Setting up git_commit and build_number as env variable"
