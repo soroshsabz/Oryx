@@ -22,7 +22,7 @@ steps:
     version: 3.1.x
 
 - task: NuGetToolInstaller@1
-  displayName: 'Use NuGet 5.5.x'
+  displayName: 'Use NuGet 5.5'
   inputs:
     versionSpec: 5.5.x
   condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
