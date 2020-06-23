@@ -60,11 +60,6 @@ namespace Microsoft.Oryx.Tests.Common
             return null;
         }
 
-        public string GenerateBashRunTimeInstallationScript(RunTimeInstallationScriptGeneratorOptions _)
-        {
-            throw new NotImplementedException();
-        }
-
         public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir(BuildScriptGeneratorContext _)
         {
             return Array.Empty<string>();
