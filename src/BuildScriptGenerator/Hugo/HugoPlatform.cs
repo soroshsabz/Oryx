@@ -87,12 +87,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
         }
 
         /// <inheritdoc/>
-        public string GenerateBashRunTimeInstallationScript(RunTimeInstallationScriptGeneratorOptions options)
-        {
-            return null;
-        }
-
-        /// <inheritdoc/>
         public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(
             BuildScriptGeneratorContext scriptGeneratorContext)
         {

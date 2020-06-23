@@ -167,12 +167,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         }
 
         /// <inheritdoc/>
-        public string GenerateBashRunTimeInstallationScript(RunTimeInstallationScriptGeneratorOptions options)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc/>
         public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(BuildScriptGeneratorContext ctx)
         {
             return Array.Empty<string>();

@@ -32,7 +32,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             services.AddSingleton<ISourceRepoProvider, DefaultSourceRepoProvider>();
             services.AddSingleton<ITempDirectoryProvider, DefaulTempDirectoryProvider>();
             services.AddSingleton<IScriptExecutor, DefaultScriptExecutor>();
-            services.AddSingleton<IRunScriptGenerator, DefaultRunScriptGenerator>();
             services.AddSingleton<DefaultPlatformDetector>();
             services.AddSingleton<PlatformsInstallationScriptProvider>();
             services.AddHttpClient("general", httpClient =>

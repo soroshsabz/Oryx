@@ -346,11 +346,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 throw new NotImplementedException();
             }
 
-            public string GenerateBashRunTimeInstallationScript(RunTimeInstallationScriptGeneratorOptions options)
-            {
-                throw new NotImplementedException();
-            }
-
             public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(
                 BuildScriptGeneratorContext scriptGeneratorContext)
             {
