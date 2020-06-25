@@ -3,15 +3,10 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Microsoft.Oryx.Common;
-
-namespace Microsoft.Oryx.Detector
+namespace Microsoft.Oryx.Detector.DotNetCore
 {
-    /// <summary>
-    /// Context to create a detector.
-    /// </summary>
-    public class DetectorContext
+    public class DotNetCorePlatformDetectorResult : PlatformDetectorResult
     {
-        public ISourceRepo SourceRepo { get; set; }
+        public string ProjectFile { get; set; }
     }
 }

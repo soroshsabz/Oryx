@@ -7,9 +7,10 @@ namespace Microsoft.Oryx.Detector
 {
     public enum PlatformName
     {
-        Node,
-        Python,
-        Php,
         DotNetCore,
+        Hugo,
+        Node,
+        Php,
+        Python,
     }
 }

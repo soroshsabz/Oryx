@@ -3,14 +3,13 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Oryx.Common.Extensions;
 
-namespace Microsoft.Oryx.Detector
+namespace Microsoft.Oryx.Common
 {
     public class LocalSourceRepo : ISourceRepo
     {

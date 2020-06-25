@@ -7,8 +7,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.Oryx.Common;
 
-namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
+namespace Microsoft.Oryx.Detector.Hugo
 {
     /// <summary>
     /// Helper class for functions around static site generators.
@@ -32,11 +33,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
         /// Checks whether or not the given repository uses a static site generator.
         /// </summary>
         /// <param name="sourceRepo">Source repo for the application.</param>
-        /// <param name="environment">Environment abstraction.</param>
         /// <returns>True if the app uses a static site generator, false otherwise.</returns>
-        public static bool IsStaticSite(ISourceRepo sourceRepo, IEnvironment environment)
+        public static bool IsStaticSite(ISourceRepo sourceRepo, HugoDetectorOptions options)
         {
-            return IsHugoApp(sourceRepo, environment);
+            return IsHugoApp(sourceRepo, options);
         }
 
         /// <summary>
@@ -45,16 +45,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
         /// <param name="sourceRepo">Source repo for the application.</param>
         /// <param name="environment">Environment abstraction.</param>
         /// <returns>True if the app is a Hugo app, false otherwise.</returns>
-        public static bool IsHugoApp(ISourceRepo sourceRepo, IEnvironment environment)
+        public static bool IsHugoApp(ISourceRepo sourceRepo, HugoDetectorOptions options)
         {
             // Check for Hugo environment variables
-            var environmentVariables = environment.GetEnvironmentVariables();
-            foreach (var key in environmentVariables?.Keys)
+            if (options.HasHugoEnvironmentVariables)
             {
-                if (key.ToString().StartsWith(HugoEnvironmentVariablePrefix))
-                {
-                    return true;
-                }
+                return true;
             }
 
             // Hugo configuration variables: https://gohugo.io/getting-started/configuration/#all-configuration-settings

@@ -5,7 +5,7 @@
 
 using System.Collections.Generic;
 
-namespace Microsoft.Oryx.Detector
+namespace Microsoft.Oryx.Common
 {
     /// <summary>
     /// Abstracts a source code repository.

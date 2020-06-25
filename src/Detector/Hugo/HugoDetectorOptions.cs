@@ -3,15 +3,10 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Microsoft.Oryx.Common;
-
-namespace Microsoft.Oryx.Detector
+namespace Microsoft.Oryx.Detector.Hugo
 {
-    /// <summary>
-    /// Context to create a detector.
-    /// </summary>
-    public class DetectorContext
+    public class HugoDetectorOptions
     {
-        public ISourceRepo SourceRepo { get; set; }
+        public bool HasHugoEnvironmentVariables { get; set; }
     }
 }

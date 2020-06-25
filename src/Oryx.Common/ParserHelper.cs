@@ -3,7 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-namespace Microsoft.Oryx.BuildScriptGenerator
+namespace Microsoft.Oryx.Common
 {
     using System.IO;
     using Nett;
@@ -13,7 +13,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     /// <summary>
     /// Helper class to parse various files into a native type.
     /// </summary>
-    internal static class ParserHelper
+    public static class ParserHelper
     {
         /// <summary>
         /// Parse a .toml file into a TomlTable from the Nett library.
