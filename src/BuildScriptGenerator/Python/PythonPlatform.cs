@@ -116,7 +116,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             {
                 detectionResult = _detector.Detect(new DetectorContext
                 {
-                    SourceRepo = new Detector.LocalSourceRepo(context.SourceRepo.RootPath),
+                    SourceRepo = new Oryx.Common.LocalSourceRepo(context.SourceRepo.RootPath),
                 });
             }
 

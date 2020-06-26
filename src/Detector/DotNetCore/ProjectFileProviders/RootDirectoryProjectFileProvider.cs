@@ -6,6 +6,7 @@
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.Detector.DotNetCore
 {

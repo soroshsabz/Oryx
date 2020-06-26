@@ -25,7 +25,7 @@ namespace Microsoft.Oryx.Detector.Hugo
 
         public PlatformDetectorResult Detect(DetectorContext context)
         {
-            var isHugoApp = StaticSiteGeneratorHelper.IsHugoApp(context.SourceRepo, _optionsk);
+            var isHugoApp = StaticSiteGeneratorHelper.IsHugoApp(context.SourceRepo, _options);
             if (isHugoApp)
             {
                 return new PlatformDetectorResult

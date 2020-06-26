@@ -57,7 +57,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
             {
                 detectionResult = _detector.Detect(new DetectorContext
                 {
-                    SourceRepo = new Common.local
+                    SourceRepo = new Oryx.Common.LocalSourceRepo(context.SourceRepo.RootPath),
                 });
             }
 
