@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -ex
 
 # https://medium.com/@Drew_Stokes/bash-argument-parsing-54f3b81a6a8f
 PARAMS=""
@@ -101,7 +101,7 @@ function downloadSdk() {
     else
         curl \
             -D $headersFile \
-            -SL "$DEV_SDK_STORAGE_BASE_URL/$platformName/$platformName-$sdkVersion.tar.gz" \
+            -SL "$storageBaseUrl/$platformName/$platformName-$sdkVersion.tar.gz" \
             --output $downloadedFileName
 
         # Use all lowercase letters to find the header and it's value
