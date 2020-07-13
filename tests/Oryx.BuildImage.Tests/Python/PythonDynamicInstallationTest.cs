@@ -90,7 +90,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                 .AddCommand(GetSnippetToCleanUpExistingInstallation())
                  .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
                  .SetEnvironmentVariable(
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
