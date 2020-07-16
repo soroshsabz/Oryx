@@ -24,72 +24,7 @@ fi
 {{ end }}
 
 zippedModulesFileName={{ CompressedNodeModulesFileName }}
-allModulesDirName=__oryx_all_node_modules
-prodModulesDirName=__oryx_prod_node_modules
 PruneDevDependencies={{ PruneDevDependencies }}
-HasProdDependencies={{ HasProdDependencies }}
-HasDevDependencies={{ HasDevDependencies }}
-
-# if node modules exist separately for dev & prod (like from an earlier build),
-# rename the folders back appropriately for the current build
-if [ -d "$allModulesDirName" ]
-then
-	echo
-	echo "Found existing folder '$SOURCE_DIR/$allModulesDirName'."
-	echo "Copying modules from '$SOURCE_DIR/$allModulesDirName' to '$SOURCE_DIR/node_modules'..."
-	cd "$SOURCE_DIR"
-	mkdir -p node_modules
-	rsync -rcE --links "$allModulesDirName/" node_modules
-fi
-
-if [ "$PruneDevDependencies" == "true" ] && [ "$HasProdDependencies" == "true" ]
-then
-	# Delete existing prod modules folder so that we do not publish
-	# any unused modules to final destination directory.
-	if [ -d "$prodModulesDirName" ]; then
-		echo "Found existing '$SOURCE_DIR/$prodModulesDirName'. Deleting it..."
-		rm -rf "$prodModulesDirName"
-	fi
-
-	mkdir -p "$prodModulesDirName"
-	cd "$prodModulesDirName"
-
-	if [ -f "$SOURCE_DIR/package.json" ]; then
-		cp -f "$SOURCE_DIR/package.json" .
-	fi
-
-	if [ -f "$SOURCE_DIR/package-lock.json" ]; then
-		cp -f "$SOURCE_DIR/package-lock.json" .
-	fi
-	
-	if [ -f "$SOURCE_DIR/.npmrc" ]; then
-		cp -f "$SOURCE_DIR/.npmrc" .
-	fi
-
-	if [ -f "$SOURCE_DIR/yarn.lock" ]; then
-		cp -f "$SOURCE_DIR/yarn.lock" .
-	fi
-
-	if [ -f "$SOURCE_DIR/.yarnrc" ]; then
-		cp -f "$SOURCE_DIR/.yarnrc" .
-	fi
-
-	echo
-	echo "Installing production dependencies in '$SOURCE_DIR/$prodModulesDirName'..."
-	echo
-	echo "Running '{{ ProductionOnlyPackageInstallCommand }}'..."
-	echo
-	{{ ProductionOnlyPackageInstallCommand }}
-
-	if [ -d "node_modules" ]; then
-		echo
-		echo "Copying production dependencies from '$SOURCE_DIR/$prodModulesDirName' to '$SOURCE_DIR/node_modules'..."
-		START_TIME=$SECONDS
-		rsync -rcE --links "node_modules/" "$SOURCE_DIR/node_modules"
-		ELAPSED_TIME=$(($SECONDS - $START_TIME))
-		echo "Done in $ELAPSED_TIME sec(s)."
-	fi
-fi
 
 cd "$SOURCE_DIR"
 
@@ -129,21 +64,11 @@ echo
 npm pack
 {{ end }}
 
-if [ "$PruneDevDependencies" == "true" ] && [ "$HasDevDependencies" == "true" ]
+if [ "$PruneDevDependencies" == "true" ]
 then
-	if [ -d "node_modules" ]; then
-		echo
-		echo "Copy '$SOURCE_DIR/node_modules' with all dependencies to '$SOURCE_DIR/$allModulesDirName'..."
-		rsync -rcE --links "node_modules/" "$allModulesDirName" --delete
-	fi
-
-	if [ "$HasProdDependencies" == "true" ] && [ -d "$prodModulesDirName/node_modules/" ]; then
-		echo
-		echo "Copying production dependencies from '$SOURCE_DIR/$prodModulesDirName/node_modules' to '$SOURCE_DIR/node_modules'..."
-		rsync -rcE --links "$prodModulesDirName/node_modules/" node_modules --delete
-	else
-		rm -rf "node_modules/"
-	fi
+	echo
+	echo "Pruning dev dependencies..."
+	npm prune --production
 fi
 
 {{ if CompressNodeModulesCommand | IsNotBlank }}
