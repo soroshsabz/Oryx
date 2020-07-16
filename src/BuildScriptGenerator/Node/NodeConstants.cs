@@ -26,8 +26,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         internal const string ProductionOnlyPackageInstallCommandTemplate = "{0} --production";
         internal const string PkgMgrRunBuildCommandTemplate = "{0} run build";
         internal const string PkgMgrRunBuildAzureCommandTemplate = "{0} run build:azure";
-        internal const string AllNodeModulesDirName = "__oryx_all_node_modules";
-        internal const string ProdNodeModulesDirName = "__oryx_prod_node_modules";
         internal const string NodeModulesDirName = "node_modules";
         internal const string NodeModulesToBeDeletedName = "_del_node_modules";
         internal const string NodeModulesZippedFileName = "node_modules.zip";
