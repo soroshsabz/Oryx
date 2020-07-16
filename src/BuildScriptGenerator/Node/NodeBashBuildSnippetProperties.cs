@@ -20,12 +20,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         public string NpmRunBuildAzureCommand { get; set; }
 
-        public bool HasProdDependencies { get; set; }
-
-        public bool HasDevDependencies { get; set; }
-
-        public string ProductionOnlyPackageInstallCommand { get; set; }
-
         public string CompressNodeModulesCommand { get; set; }
 
         public string CompressedNodeModulesFileName { get; set; }
@@ -33,6 +27,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public bool ConfigureYarnCache { get; set; }
 
         public bool PruneDevDependencies { get; set; }
+
+        public string PruneDevDependenciesCommand { get; set; }
 
         public string AppInsightsInjectCommand { get; set; }
 

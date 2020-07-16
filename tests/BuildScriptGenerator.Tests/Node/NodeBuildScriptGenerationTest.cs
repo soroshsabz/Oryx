@@ -84,7 +84,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         }";
 
         private const string NpmInstallCommand = NodeConstants.NpmPackageInstallCommand;
-        private const string YarnInstallCommand = "yarn install --prefer-offline";
+        private const string YarnInstallCommand = NodeConstants.YarnPackageInstallCommand;
 
         [Fact]
         public void GeneratedScript_HasNpmVersion_SpecifiedInPackageJson()
@@ -109,11 +109,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 PackageInstallerVersionCommand = NodeConstants.NpmVersionCommand,
                 NpmRunBuildCommand = null,
                 NpmRunBuildAzureCommand = null,
-                HasProdDependencies = true,
-                HasDevDependencies = false,
-                ProductionOnlyPackageInstallCommand = string.Format(
-                    NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
-                    NpmInstallCommand),
                 CompressedNodeModulesFileName = null,
                 CompressNodeModulesCommand = null,
             };
@@ -151,10 +146,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 PackageInstallerVersionCommand = NodeConstants.NpmVersionCommand,
                 NpmRunBuildCommand = null,
                 NpmRunBuildAzureCommand = null,
-                HasProdDependencies = false,
-                ProductionOnlyPackageInstallCommand = string.Format(
-                    NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
-                    NpmInstallCommand),
                 CompressedNodeModulesFileName = null,
                 CompressNodeModulesCommand = null,
             };
@@ -191,10 +182,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 PackageInstallerVersionCommand = NodeConstants.NpmVersionCommand,
                 NpmRunBuildCommand = null,
                 NpmRunBuildAzureCommand = null,
-                HasProdDependencies = false,
-                ProductionOnlyPackageInstallCommand = string.Format(
-                    NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
-                    NpmInstallCommand),
                 CompressedNodeModulesFileName = null,
                 CompressNodeModulesCommand = null,
             };
@@ -233,10 +220,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 PackageInstallerVersionCommand = NodeConstants.YarnVersionCommand,
                 NpmRunBuildCommand = null,
                 NpmRunBuildAzureCommand = null,
-                HasProdDependencies = false,
-                ProductionOnlyPackageInstallCommand = string.Format(
-                    NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
-                    YarnInstallCommand),
                 CompressedNodeModulesFileName = null,
                 CompressNodeModulesCommand = null,
                 ConfigureYarnCache = true,
@@ -276,11 +259,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 PackageInstallerVersionCommand = NodeConstants.YarnVersionCommand,
                 NpmRunBuildCommand = "yarn run build",
                 NpmRunBuildAzureCommand = "yarn run build:azure",
-                HasProdDependencies = true,
-                HasDevDependencies = true,
-                ProductionOnlyPackageInstallCommand = string.Format(
-                    NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
-                    YarnInstallCommand),
                 CompressedNodeModulesFileName = null,
                 CompressNodeModulesCommand = null,
                 ConfigureYarnCache = true,
@@ -320,10 +298,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 PackageInstallerVersionCommand = NodeConstants.NpmVersionCommand,
                 NpmRunBuildCommand = null,
                 NpmRunBuildAzureCommand = null,
-                HasProdDependencies = false,
-                ProductionOnlyPackageInstallCommand = string.Format(
-                    NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
-                    NpmInstallCommand),
                 CompressedNodeModulesFileName = null,
                 CompressNodeModulesCommand = null,
             };
@@ -361,11 +335,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 PackageInstallerVersionCommand = NodeConstants.NpmVersionCommand,
                 NpmRunBuildCommand = "npm run build",
                 NpmRunBuildAzureCommand = "npm run build:azure",
-                HasProdDependencies = true,
-                HasDevDependencies = true,
-                ProductionOnlyPackageInstallCommand = string.Format(
-                    NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
-                    NpmInstallCommand),
                 CompressedNodeModulesFileName = null,
                 CompressNodeModulesCommand = null,
             };
@@ -407,11 +376,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 PackageInstallerVersionCommand = NodeConstants.NpmVersionCommand,
                 NpmRunBuildCommand = "npm run build",
                 NpmRunBuildAzureCommand = "npm run build:azure",
-                HasProdDependencies = true,
-                HasDevDependencies = true,
-                ProductionOnlyPackageInstallCommand = string.Format(
-                    NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
-                    NpmInstallCommand),
                 CompressedNodeModulesFileName = "node_modules.tar.gz",
                 CompressNodeModulesCommand = "tar -zcf",
             };
@@ -455,11 +419,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 PackageInstallerVersionCommand = NodeConstants.NpmVersionCommand,
                 NpmRunBuildCommand = "npm run build",
                 NpmRunBuildAzureCommand = "npm run build:azure",
-                HasProdDependencies = true,
-                HasDevDependencies = true,
-                ProductionOnlyPackageInstallCommand = string.Format(
-                    NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
-                    NpmInstallCommand),
                 CompressedNodeModulesFileName = "node_modules.tar.gz",
                 CompressNodeModulesCommand = "tar -zcf",
             };
@@ -502,11 +461,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 PackageInstallerVersionCommand = NodeConstants.NpmVersionCommand,
                 NpmRunBuildCommand = "npm run build",
                 NpmRunBuildAzureCommand = "npm run build:azure",
-                HasProdDependencies = true,
-                HasDevDependencies = true,
-                ProductionOnlyPackageInstallCommand = string.Format(
-                    NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
-                    NpmInstallCommand),
                 CompressedNodeModulesFileName = "node_modules.zip",
                 CompressNodeModulesCommand = "zip -y -q -r",
             };
@@ -545,11 +499,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 PackageInstallerVersionCommand = NodeConstants.NpmVersionCommand,
                 NpmRunBuildCommand = "npm run build",
                 NpmRunBuildAzureCommand = "npm run build:azure",
-                HasProdDependencies = true,
-                HasDevDependencies = true,
-                ProductionOnlyPackageInstallCommand = string.Format(
-                    NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
-                    NpmInstallCommand),
                 CompressedNodeModulesFileName = null,
                 CompressNodeModulesCommand = null,
             };

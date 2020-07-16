@@ -19,11 +19,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         internal const string YarnCommand = "yarn";
         internal const string HugoCommand = "hugo";
         internal const string NpmPackageInstallCommand = "npm install --unsafe-perm";
+        internal const string NpmPruneDevDependenciesCommand = "npm prune --production";
         internal const string NpmVersionCommand = "echo Using Npm version: && npm --version";
         internal const string YarnVersionCommand = "echo Using Yarn version: && yarn --version";
         internal const string HugoVersionCommand = "echo Using Hugo version: && hugo version";
         internal const string YarnPackageInstallCommand = "yarn install --prefer-offline";
-        internal const string ProductionOnlyPackageInstallCommandTemplate = "{0} --production";
+        internal const string YarnPruneDevDependenciesCommand = "yarn install --production --ignore-scripts --prefer-offline";
         internal const string PkgMgrRunBuildCommandTemplate = "{0} run build";
         internal const string PkgMgrRunBuildAzureCommandTemplate = "{0} run build:azure";
         internal const string NodeModulesDirName = "node_modules";

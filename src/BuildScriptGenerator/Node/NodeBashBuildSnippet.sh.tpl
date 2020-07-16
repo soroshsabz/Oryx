@@ -24,7 +24,6 @@ fi
 {{ end }}
 
 zippedModulesFileName={{ CompressedNodeModulesFileName }}
-PruneDevDependencies={{ PruneDevDependencies }}
 
 cd "$SOURCE_DIR"
 
@@ -64,12 +63,13 @@ echo
 npm pack
 {{ end }}
 
-if [ "$PruneDevDependencies" == "true" ]
-then
-	echo
-	echo "Pruning dev dependencies..."
-	npm prune --production
-fi
+{{ if PruneDevDependencies }}
+echo
+echo "Pruning dev dependencies..."
+echo "Running '{{ PruneDevDependenciesCommand }}'..."
+echo
+{{ PruneDevDependenciesCommand }}
+{{ end }}
 
 {{ if CompressNodeModulesCommand | IsNotBlank }}
 if [ "$SOURCE_DIR" != "$DESTINATION_DIR" ]

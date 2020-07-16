@@ -147,6 +147,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             string packageManagerCmd = null;
             string packageInstallCommand = null;
             string packageInstallerVersionCommand = null;
+            string pruneDevDependenciesCommand;
 
             if (ctx.SourceRepo.FileExists(NodeConstants.YarnLockFileName))
             {
@@ -154,12 +155,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 packageInstallCommand = NodeConstants.YarnPackageInstallCommand;
                 configureYarnCache = true;
                 packageInstallerVersionCommand = NodeConstants.YarnVersionCommand;
+                pruneDevDependenciesCommand = NodeConstants.YarnPruneDevDependenciesCommand;
             }
             else
             {
                 packageManagerCmd = NodeConstants.NpmCommand;
                 packageInstallCommand = NodeConstants.NpmPackageInstallCommand;
                 packageInstallerVersionCommand = NodeConstants.NpmVersionCommand;
+                pruneDevDependenciesCommand = NodeConstants.NpmPruneDevDependenciesCommand;
             }
 
             _logger.LogInformation("Using {packageManager}", packageManagerCmd);
@@ -176,9 +179,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 // If development time dependencies are present we want to avoid copying them to improve performance
                 hasDevDependencies = true;
             }
-
-            var productionOnlyPackageInstallCommand = string.Format(
-                NodeConstants.ProductionOnlyPackageInstallCommandTemplate, packageInstallCommand);
 
             if (string.IsNullOrEmpty(_nodeScriptGeneratorOptions.CustomRunBuildCommand))
             {
@@ -259,13 +259,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 PackageInstallCommand = packageInstallCommand,
                 NpmRunBuildCommand = runBuildCommand,
                 NpmRunBuildAzureCommand = runBuildAzureCommand,
-                HasProdDependencies = hasProdDependencies,
-                HasDevDependencies = hasDevDependencies,
-                ProductionOnlyPackageInstallCommand = productionOnlyPackageInstallCommand,
                 CompressNodeModulesCommand = compressNodeModulesCommand,
                 CompressedNodeModulesFileName = compressedNodeModulesFileName,
                 ConfigureYarnCache = configureYarnCache,
                 PruneDevDependencies = pruneDevDependencies,
+                PruneDevDependenciesCommand = pruneDevDependenciesCommand,
                 AppInsightsInjectCommand = appInsightsInjectCommand,
                 AppInsightsPackageName = NodeConstants.NodeAppInsightsPackageName,
                 AppInsightsLoaderFileName = NodeAppInsightsLoader.NodeAppInsightsLoaderFileName,
