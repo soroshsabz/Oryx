@@ -42,7 +42,10 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             parts.Add(projectFileInfo.Name);
 
             // Since directory names are case sensitive on non-Windows OSes, try not to use ignore case
-            while (!string.Equals(currDir.FullName, repoRootDir.FullName, StringComparison.Ordinal))
+            while (!string.Equals(
+                currDir.FullName.TrimEnd(Path.DirectorySeparatorChar),
+                repoRootDir.FullName.TrimEnd(Path.DirectorySeparatorChar),
+                StringComparison.Ordinal))
             {
                 parts.Insert(0, currDir.Name);
                 currDir = currDir.Parent;

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.Detector.DotNetCore
 {
@@ -15,8 +16,6 @@ namespace Microsoft.Oryx.Detector.DotNetCore
         private readonly ILogger<ProbeAndFindProjectFileProvider> _logger;
         private readonly DetectorOptions _options;
 
-        // Since this service is registered as a singleton, we can cache the lookup of project file.
-        private bool _probedForProjectFile;
         private string _projectFileRelativePath;
 
         public ProbeAndFindProjectFileProvider(
@@ -61,9 +60,6 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             var azureFunctionsProjects = new List<string>();
             var azureBlazorWasmProjects = new List<string>();
             var allProjects = new List<string>();
-            bool functionProjectExists = false;
-            bool webAppProjectExists = false;
-            bool blazorWasmProjectExists = false;
 
             foreach (var file in projectFiles)
             {
@@ -71,17 +67,14 @@ namespace Microsoft.Oryx.Detector.DotNetCore
                 if (ProjectFileHelpers.IsAzureBlazorWebAssemblyProject(sourceRepo, file))
                 {
                     azureBlazorWasmProjects.Add(file);
-                    blazorWasmProjectExists = true;
                 }
                 else if (ProjectFileHelpers.IsAzureFunctionsProject(sourceRepo, file))
                 {
                     azureFunctionsProjects.Add(file);
-                    functionProjectExists = true;
                 }
                 else if (ProjectFileHelpers.IsAspNetCoreWebApplicationProject(sourceRepo, file))
                 {
                     webAppProjects.Add(file);
-                    webAppProjectExists = true;
                 }
             }
 
@@ -96,14 +89,38 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             {
                 _logger.LogInformation($"{nameof(_options.AppType)} is set to {_options.AppType}");
 
-                if (functionProjectExists && _options.AppType.ToLower().Contains(Constants.FunctionApplications))
+                if (_options.AppType.EqualsIgnoreCase(Constants.FunctionApplications))
                 {
-                    projectFile = GetProject(azureFunctionsProjects);
+                    if (azureFunctionsProjects.Any())
+                    {
+                        projectFile = GetProject(azureFunctionsProjects);
+                    }
+                    else
+                    {
+                        return null;
+                    }
                 }
-                else if (blazorWasmProjectExists
-                    && _options.AppType.ToLower().Contains(Constants.StaticSiteApplications))
+                else if (_options.AppType.EqualsIgnoreCase(Constants.StaticSiteApplications))
                 {
-                    projectFile = GetProject(azureBlazorWasmProjects);
+                    if (azureBlazorWasmProjects.Any())
+                    {
+                        projectFile = GetProject(azureBlazorWasmProjects);
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+                else if (_options.AppType.EqualsIgnoreCase(Constants.WebApplications))
+                {
+                    if (webAppProjects.Any())
+                    {
+                        projectFile = GetProject(webAppProjects);
+                    }
+                    else
+                    {
+                        return null;
+                    }
                 }
                 else
                 {
@@ -116,15 +133,15 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             {
                 // If multiple project exists, and appType is not passed
                 // we detect them in following order
-                if (projectFile == null && webAppProjectExists)
+                if (webAppProjects.Any())
                 {
                     projectFile = GetProject(webAppProjects);
                 }
-                else if (projectFile == null && blazorWasmProjectExists)
+                else if (azureBlazorWasmProjects.Any())
                 {
                     projectFile = GetProject(azureBlazorWasmProjects);
                 }
-                else if (projectFile == null && functionProjectExists)
+                else if (azureFunctionsProjects.Any())
                 {
                     projectFile = GetProject(azureFunctionsProjects);
                 }
@@ -137,8 +154,6 @@ namespace Microsoft.Oryx.Detector.DotNetCore
                 return null;
             }
 
-            // Cache the results
-            _probedForProjectFile = true;
             _projectFileRelativePath = ProjectFileHelpers.GetRelativePathToRoot(projectFile, sourceRepo.RootPath);
             return _projectFileRelativePath;
         }
