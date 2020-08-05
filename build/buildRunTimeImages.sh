@@ -56,18 +56,34 @@ fi
 # We don't retrieve this image from a repository but rather build locally to make sure we get
 # the latest version of its own base image.
 
-docker build \
-    --pull \
-    -f "$RUNTIME_BASE_IMAGE_DOCKERFILE_PATH" \
-    -t "$RUNTIME_BASE_IMAGE_NAME-stretch" \
-    --build-arg DEBIAN_FLAVOR=stretch \
+# Create the following image so that it's contents can be copied to the rest of the images below
+imageName="supportfilesimage"
+echo
+echo "-------------Building image '$imageName'-------------------"
+docker build -t $imageName \
+    -f "$SUPPORT_FILES_IMAGE_DOCKERFILE" \
     $REPO_DIR
 
+imageName="$RUNTIME_BASE_IMAGE_NAME-stretch"
+echo
+echo "-------------Building image '$imageName'-------------------"
+baseImage="buildpack-deps:stretch-curl"
+docker pull $baseImage
 docker build \
-    --pull \
     -f "$RUNTIME_BASE_IMAGE_DOCKERFILE_PATH" \
-    -t "$RUNTIME_BASE_IMAGE_NAME-buster" \
-    --build-arg DEBIAN_FLAVOR=buster \
+    -t "$imageName" \
+    --build-arg BASE_IMAGE="$baseImage" \
+    $REPO_DIR
+
+imageName="$RUNTIME_BASE_IMAGE_NAME-buster"
+echo
+echo "-------------Building image '$imageName'-------------------"
+baseImage="buildpack-deps:buster-curl"
+docker pull $baseImage
+docker build \
+    -f "$RUNTIME_BASE_IMAGE_DOCKERFILE_PATH" \
+    -t "$imageName" \
+    --build-arg BASE_IMAGE="$baseImage" \
     $REPO_DIR
 
 execAllGenerateDockerfiles "$runtimeImagesSourceDir" "generateDockerfiles.sh" "$runtimeImageDebianFlavor"

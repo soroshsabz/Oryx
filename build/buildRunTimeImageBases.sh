@@ -45,22 +45,35 @@ echo
 # Build the common base image first, so other images that depend on it get the latest version.
 # We don't retrieve this image from a repository but rather build locally to make sure we get
 # the latest version of its own base image.
+# Create the following image so that it's contents can be copied to the rest of the images below
+imageName="supportfilesimage"
+echo
+echo "-------------Building image '$imageName'-------------------"
+docker build -t $imageName \
+    -f "$SUPPORT_FILES_IMAGE_DOCKERFILE" \
+    $REPO_DIR
+    
+imageName="$RUNTIME_BASE_IMAGE_NAME-stretch"
+echo
+echo "-------------Building image '$imageName'-------------------"
+baseImage="buildpack-deps:stretch-curl"
+docker pull $baseImage
 docker build \
-    --pull \
-    --build-arg DEBIAN_FLAVOR=stretch \
+    --build-arg BASE_IMAGE=$baseImage \
     -f "$RUNTIME_BASE_IMAGE_DOCKERFILE_PATH" \
-    -t "$RUNTIME_BASE_IMAGE_NAME-stretch" \
+    -t "$imageName" \
     $REPO_DIR
 
+imageName="$RUNTIME_BASE_IMAGE_NAME-buster"
+echo
+echo "-------------Building image '$imageName'-------------------"
+baseImage="buildpack-deps:buster-curl"
+docker pull $baseImage
 docker build \
-    --pull \
-    --build-arg DEBIAN_FLAVOR=buster \
+    --build-arg BASE_IMAGE=$baseImage \
     -f "$RUNTIME_BASE_IMAGE_DOCKERFILE_PATH" \
-    -t "$RUNTIME_BASE_IMAGE_NAME-buster" \
+    -t "$imageName" \
     $REPO_DIR
-
-labels="--label com.microsoft.oryx.git-commit=$GIT_COMMIT"
-labels="$labels --label com.microsoft.oryx.build-number=$BUILD_NUMBER"
 
 execAllGenerateDockerfiles "$runtimeImagesSourceDir" "generateDockerfiles.sh" "$runtimeImageDebianFlavor"
 
@@ -140,8 +153,12 @@ for dockerFile in $dockerFiles; do
         --build-arg NODE12_VERSION=$NODE12_VERSION \
         --build-arg NODE14_VERSION=$NODE14_VERSION \
         --build-arg DEBIAN_FLAVOR=$runtimeImageDebianFlavor \
-        $labels \
         .
+
+    echo
+    echo "'$localImageTagName' image history:"
+    docker history $localImageTagName
+    echo
 
     # Retag build image with build numbers as ACR tags
     if [ "$AGENT_BUILD" == "true" ]
