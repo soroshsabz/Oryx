@@ -17,11 +17,10 @@ RUN ./build.sh php /opt/startupcmdgen/startupcmdgen
 FROM %RUNTIME_BASE_IMAGE_NAME%
 
 # Bake Application Insights key from pipeline variable into final image
-ARG AI_KEY
-ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
+ENV ORYX_AI_INSTRUMENTATION_KEY=%AI_KEY%
 
 COPY --from=startupCmdGen /opt/startupcmdgen/startupcmdgen /opt/startupcmdgen/startupcmdgen
 RUN ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
-    && rm -rf /tmp/oryx \
     # Temporarily making sure apache2-foreground has permission
-    && chmod +x /usr/local/bin/apache2-foreground
+    && chmod +x /usr/local/bin/apache2-foreground \
+    && rm -rf /tmp/oryx
