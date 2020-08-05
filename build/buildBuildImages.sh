@@ -116,8 +116,6 @@ function buildGitHubRunnersBaseImage() {
 }
 
 function buildTemporaryFilesImage() {
-	buildGitHubRunnersBaseImage
-	
 	# Create the following image so that it's contents can be copied to the rest of the images below
 	echo
 	echo "-------------Creating temporary files image-------------------"
@@ -127,6 +125,7 @@ function buildTemporaryFilesImage() {
 }
 
 function buildBuildScriptGeneratorImage() {
+	buildGitHubRunnersBaseImage
 	buildTemporaryFilesImage
 
 	# Create the following image so that it's contents can be copied to the rest of the images below

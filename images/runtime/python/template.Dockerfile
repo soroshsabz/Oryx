@@ -14,32 +14,27 @@ ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN ./build.sh python /opt/startupcmdgen/startupcmdgen
 
-FROM oryx-run-base-${DEBIAN_FLAVOR} AS main
-ARG IMAGES_DIR=/tmp/oryx/images
-ENV PYTHON_VERSION %PYTHON_FULL_VERSION%
-
-RUN ${IMAGES_DIR}/installPlatform.sh python $PYTHON_VERSION --dir /opt/python/$PYTHON_VERSION --links false
-RUN set -ex \
- && cd /opt/python/ \
- && ln -s %PYTHON_FULL_VERSION% %PYTHON_VERSION% \
- && ln -s %PYTHON_VERSION% %PYTHON_MAJOR_VERSION% \
- && echo /opt/python/%PYTHON_MAJOR_VERSION%/lib >> /etc/ld.so.conf.d/python.conf \
- && ldconfig \
- && if [ "%PYTHON_MAJOR_VERSION%" = "3" ]; then cd /opt/python/%PYTHON_MAJOR_VERSION%/bin \
- && ln -s idle3 idle \
- && ln -s pydoc3 pydoc \
- && ln -s python3-config python-config; fi
-
-ENV PATH="/opt/python/%PYTHON_MAJOR_VERSION%/bin:${PATH}"
-
-# Bake Application Insights key from pipeline variable into final image
+FROM oryx-run-base-${DEBIAN_FLAVOR}
 ARG AI_KEY
-ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
-RUN ${IMAGES_DIR}/runtime/python/install-dependencies.sh
-RUN pip install --upgrade pip \
+
+ENV PATH="/opt/python/%PYTHON_MAJOR_VERSION%/bin:${PATH}" \
+    ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
+
+RUN PYTHON_VERSION=%PYTHON_FULL_VERSION% \
+    && /opt/tmp/images/installPlatform.sh python $PYTHON_VERSION --dir /opt/python/$PYTHON_VERSION --links false \
+    && set -ex \
+    && cd /opt/python/ \
+    && ln -s %PYTHON_FULL_VERSION% %PYTHON_VERSION% \
+    && ln -s %PYTHON_VERSION% %PYTHON_MAJOR_VERSION% \
+    && echo /opt/python/%PYTHON_MAJOR_VERSION%/lib >> /etc/ld.so.conf.d/python.conf \
+    && ldconfig \
+    && if [ "%PYTHON_MAJOR_VERSION%" = "3" ]; then cd /opt/python/%PYTHON_MAJOR_VERSION%/bin \
+    && ln -s idle3 idle \
+    && ln -s pydoc3 pydoc \
+    && ln -s python3-config python-config; fi \
+    && /opt/tmp/images/runtime/python/install-dependencies.sh \
+    && pip install --upgrade pip \
     && pip install gunicorn \
     && pip install ptvsd \
-    && ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx
-
-RUN rm -rf /tmp/oryx
-COPY --from=startupCmdGen /opt/startupcmdgen/startupcmdgen /opt/startupcmdgen/startupcmdgen
+    && ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
+    && rm -rf /opt/tmp

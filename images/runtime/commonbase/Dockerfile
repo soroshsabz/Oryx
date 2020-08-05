@@ -1,15 +1,15 @@
 ARG DEBIAN_FLAVOR
-FROM buildpack-deps:${DEBIAN_FLAVOR}-curl
-ARG IMAGES_DIR=/tmp/oryx/images
-ARG BUILD_DIR=/tmp/oryx/build
-
+FROM buildpack-deps:${DEBIAN_FLAVOR}-curl as main
 RUN apt-get update \
 	&& apt-get upgrade -y \
 	&& apt-get install -y --no-install-recommends \
 		xz-utils \
+		unzip \
 	&& rm -rf /var/lib/apt/lists/*
 
-ADD images ${IMAGES_DIR}
-ADD build ${BUILD_DIR}
-RUN find ${IMAGES_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
-RUN find ${BUILD_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
+FROM debian:buster-slim as tempFiles
+COPY --from=startupCmdGen /opt/startupcmdgen/startupcmdgen /opt/startupcmdgen/startupcmdgen
+COPY --from=support-files-image-for-build /tmp/oryx/ /opt/tmp
+
+FROM main
+COPY --from=tempFiles /opt /opt

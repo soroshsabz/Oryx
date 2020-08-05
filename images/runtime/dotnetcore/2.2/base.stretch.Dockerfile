@@ -25,13 +25,13 @@ RUN apt-get update \
         file \
     && rm -rf /var/lib/apt/lists/*
 
+COPY --from=tools-install /dotnetcore-tools /opt/dotnetcore-tools
+
 # Configure web servers to bind to port 80 when present
 ENV ASPNETCORE_URLS=http://+:80 \
     # Enable detection of running in a container
-    DOTNET_RUNNING_IN_CONTAINER=true
-
-COPY --from=tools-install /dotnetcore-tools /opt/dotnetcore-tools
-ENV PATH="/opt/dotnetcore-tools:${PATH}"
+    DOTNET_RUNNING_IN_CONTAINER=true \
+    PATH="/opt/dotnetcore-tools:${PATH}"
 
 # Install ASP.NET Core
 RUN set -ex \
@@ -41,13 +41,10 @@ RUN set -ex \
     && mkdir -p /usr/share/dotnet \
     && tar -zxf aspnetcore.tar.gz -C /usr/share/dotnet \
     && rm aspnetcore.tar.gz \
-    && ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet
-
-RUN dotnet-sos install
-
-RUN apt-get update \
+    && ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet \
+    && dotnet-sos install \
+    && apt-get update \
     && apt-get install -y --no-install-recommends \
         libgdiplus \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN rm -rf ${BUILD_DIR}
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf ${BUILD_DIR}

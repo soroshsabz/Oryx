@@ -40,17 +40,9 @@ then
     fi
 fi
 
-labels="--label com.microsoft.oryx.git-commit=$GIT_COMMIT"
-labels="$labels --label com.microsoft.oryx.build-number=$BUILD_NUMBER"
-labels="$labels --label com.microsoft.oryx.release-tag-name=$RELEASE_TAG_NAME"
-
-# Avoid causing cache invalidation with the following check
-if [ "$EMBED_BUILDCONTEXT_IN_IMAGES" == "true" ]
-then
-    args="--build-arg GIT_COMMIT=$GIT_COMMIT"
-    args="$args --build-arg BUILD_NUMBER=$BUILD_NUMBER"
-    args="$args --build-arg RELEASE_TAG_NAME=$RELEASE_TAG_NAME"
-fi
+# NOTE: We are using only one label here and put all information in it 
+# in order to limit the number of layers that are created
+labelContent="git_commit=$GIT_COMMIT, build_number=$BUILD_NUMBER, release_tag_name=$RELEASE_TAG_NAME"
 
 # Build the common base image first, so other images that depend on it get the latest version.
 # We don't retrieve this image from a repository but rather build locally to make sure we get
@@ -69,6 +61,10 @@ docker build \
     -t "$RUNTIME_BASE_IMAGE_NAME-buster" \
     --build-arg DEBIAN_FLAVOR=buster \
     $REPO_DIR
+
+docker build -t support-files-image-for-build \
+		-f "$BUILD_IMAGES_SUPPORT_FILES_DOCKERFILE" \
+		.
 
 execAllGenerateDockerfiles "$runtimeImagesSourceDir" "generateDockerfiles.sh" "$runtimeImageDebianFlavor"
 
@@ -111,8 +107,7 @@ for dockerFile in $dockerFiles; do
         --build-arg SDK_STORAGE_ENV_NAME=$SDK_STORAGE_BASE_URL_KEY_NAME \
         --build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_CDN_STORAGE_BASE_URL \
         --build-arg DEBIAN_FLAVOR=$runtimeImageDebianFlavor \
-        $args \
-        $labels \
+        --label com.microsoft.oryx="$labelContent" \
         .
 
     echo "$localImageTagName" >> $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE.$runtimeImageDebianFlavor.txt
