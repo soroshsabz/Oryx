@@ -6,7 +6,8 @@ FROM oryx-run-base-${DEBIAN_FLAVOR}
 # from this image.
 
 # Gpg keys listed at https://github.com/nodejs/node
-RUN /opt/tmp/images/receiveGpgKeys.sh 6A010C5166006599AA17F08146C2130DFD2497F5 \
+RUN imagesDir="/tmp/oryx/images" \
+  && $imagesDir/receiveGpgKeys.sh 6A010C5166006599AA17F08146C2130DFD2497F5 \
   && YARN_VERSION="1.17.3" \
   && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
   && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz.asc" \

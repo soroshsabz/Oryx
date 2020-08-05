@@ -1,4 +1,5 @@
 ARG DEBIAN_FLAVOR
+
 # Startup script generator
 FROM golang:1.14-${DEBIAN_FLAVOR} as startupCmdGen
 # Install dep
@@ -15,13 +16,13 @@ ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN ./build.sh python /opt/startupcmdgen/startupcmdgen
 
 FROM oryx-run-base-${DEBIAN_FLAVOR}
-ARG AI_KEY
 
 ENV PATH="/opt/python/%PYTHON_MAJOR_VERSION%/bin:${PATH}" \
-    ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
+    ORYX_AI_INSTRUMENTATION_KEY=%AI_KEY%
 
-RUN PYTHON_VERSION=%PYTHON_FULL_VERSION% \
-    && /opt/tmp/images/installPlatform.sh python $PYTHON_VERSION --dir /opt/python/$PYTHON_VERSION --links false \
+RUN imagesDir="/tmp/oryx/images" \
+    && PYTHON_VERSION=%PYTHON_FULL_VERSION% \
+    && $imagesDir/installPlatform.sh python $PYTHON_VERSION --dir /opt/python/$PYTHON_VERSION --links false \
     && set -ex \
     && cd /opt/python/ \
     && ln -s %PYTHON_FULL_VERSION% %PYTHON_VERSION% \
@@ -32,9 +33,9 @@ RUN PYTHON_VERSION=%PYTHON_FULL_VERSION% \
     && ln -s idle3 idle \
     && ln -s pydoc3 pydoc \
     && ln -s python3-config python-config; fi \
-    && /opt/tmp/images/runtime/python/install-dependencies.sh \
+    && $imagesDir/runtime/python/install-dependencies.sh \
     && pip install --upgrade pip \
     && pip install gunicorn \
     && pip install ptvsd \
     && ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
-    && rm -rf /opt/tmp
+    && rm -rf $imagesDir
