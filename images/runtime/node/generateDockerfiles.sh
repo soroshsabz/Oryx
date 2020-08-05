@@ -13,6 +13,7 @@ source $REPO_DIR/build/__nodeVersions.sh
 declare -r DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 declare -r DOCKERFILE_TEMPLATE="$DIR/template.Dockerfile"
 declare -r RUNTIME_BASE_IMAGE_NAME_PLACEHOLDER="%RUNTIME_BASE_IMAGE_NAME%"
+declare -r AI_KEY_PLACEHOLDER="%AI_KEY%"
 declare -r NODE_BUSTER_VERSION_ARRAY=($NODE14_VERSION)
 
 echo "$1"
@@ -33,6 +34,7 @@ if [ "$1" == "buster" ];then
 		# Replace placeholders
 		RUNTIME_BASE_IMAGE_NAME="mcr.microsoft.com/oryx/base:node-$VERSION_DIRECTORY-$NODE_RUNTIME_BASE_TAG"
 		sed -i "s|$RUNTIME_BASE_IMAGE_NAME_PLACEHOLDER|$RUNTIME_BASE_IMAGE_NAME|g" "$TARGET_DOCKERFILE"
+		sed -i "s|$AI_KEY_PLACEHOLDER|$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY|g" "$TARGET_DOCKERFILE"
 	done
 else
 	dockerFiles=$(find . -type f \( -name "base.stretch.Dockerfile" \) )
@@ -51,6 +53,7 @@ else
 		echo "Generating Dockerfile for stretch based images..."
 		# Replace placeholders
 		RUNTIME_BASE_IMAGE_NAME="mcr.microsoft.com/oryx/base:node-$VERSION_DIRECTORY-$NODE_RUNTIME_BASE_TAG"
-		sed -i "s|$RUNTIME_BASE_IMAGE_NAME_PLACEHOLDER|$RUNTIME_BASE_IMAGE_NAME|g" "$TARGET_DOCKERFILE"	
+		sed -i "s|$RUNTIME_BASE_IMAGE_NAME_PLACEHOLDER|$RUNTIME_BASE_IMAGE_NAME|g" "$TARGET_DOCKERFILE"
+		sed -i "s|$AI_KEY_PLACEHOLDER|$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY|g" "$TARGET_DOCKERFILE"
 	done
 fi
