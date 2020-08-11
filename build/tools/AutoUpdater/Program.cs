@@ -7,9 +7,13 @@ namespace AutoUpdater
     [Subcommand(typeof(GitHubRunnersCachedImagesCheckCommand))]
     class Program
     {
-        static void Main(string[] args)
+        internal int OnExecute(CommandLineApplication app, IConsole console)
         {
-            
+            app.ShowHelp();
+
+            return 0;
         }
+
+        private static int Main(string[] args) => CommandLineApplication.Execute<Program>(args);
     }
 }

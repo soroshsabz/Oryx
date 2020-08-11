@@ -21,22 +21,26 @@ namespace AutoUpdater
                     var dockerFileLocation = "images/build/Dockerfiles/gitHubRunners.BuildPackDepsStretch.Dockerfile";
                     var newBranchName = "autoupdater/update.githubrunners.digest";
                     var tempDir = Path.GetTempPath();
-                    var script = @$"
-#!/bin/bash
-set -ex
-cd {tempDir}
-git clone https://github.com/microsoft/oryx --depth 1
-git checkout -b {newBranchName}
-echo '{newContentInDockerfile}' > {dockerFileLocation}
-git add {dockerFileLocation}
-git commit -m 'Updated GitHub runners digest sha'
-git push -u origin {newBranchName}
-curl \
-  -X POST \
-  -H 'Accept: application/vnd.github.v3+json' \
-  https://api.github.com/repos/microsoft/oryx/pulls \
-  -d '{{""title"":""Updated GitHub runners digest"",""head"":""{{{newBranchName}}}"",""base"":""master""}}'
-";
+                    
+                    var scriptBuilder = new ShellScriptBuilder(cmdSeparator: Environment.NewLine)
+                        .AddShebang("/bin/bash")
+                        .AddCommand("set -ex")
+                        .AddCommand($"cd {tempDir}")
+                        .AddCommand($"git clone https://github.com/microsoft/oryx --depth 1")
+                        .AddCommand($"cd oryx")
+                        .AddCommand($"git config --global user.email \"oryxci@gmail.com\"")
+                        .AddCommand($"git config --global user.name \"Oryx-CI\"")
+                        .AddCommand($"git checkout -b {newBranchName}")
+                        .AddCommand($"echo '{newContentInDockerfile}' > {dockerFileLocation}")
+                        .AddCommand($"git add {dockerFileLocation}")
+                        .AddCommand($"git commit -m 'Updated GitHub runners digest sha'")
+                        .AddCommand($"git push -u origin {newBranchName}")
+                        .AddCommand($"curl -X POST -H 'Accept: application/vnd.github.v3+json' " +
+                        $"https://api.github.com/repos/microsoft/oryx/pulls -d " +
+                        @$"'{{""title"":""Updated GitHub runners digest"",""head"":""{{{newBranchName}}}"",""base"":""master""}}'")
+                        .AddCommand("cd ..")
+                        .AddCommand("rm -rf oryx");
+                    var script = scriptBuilder.ToString();
 
                     var scriptPath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.sh");
                     Console.WriteLine($"Script generated at {scriptPath}");
@@ -52,9 +56,9 @@ curl \
 
                     Console.WriteLine("Running the script...");
                     exitCode = ProcessHelper.RunProcess(
-                        scriptPath,
-                        arguments: null,
-                        workingDirectory: null,
+                        fileName: scriptPath,
+                        arguments: new string[] { },
+                        workingDirectory: Path.GetTempPath(),
                         // Preserve the output structure and use AppendLine as these handlers
                         // are called for each line that is written to the output.
                         standardOutputHandler: (sender, args) =>
@@ -65,7 +69,7 @@ curl \
                         {
                             Console.Error.WriteLine(args.Data);
                         },
-                        waitTimeForExit: TimeSpan.FromMinutes(15));
+                        waitTimeForExit: null);
 
                     Console.WriteLine("Done.");
                     return exitCode;
