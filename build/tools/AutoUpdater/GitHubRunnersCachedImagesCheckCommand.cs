@@ -17,7 +17,7 @@ namespace AutoUpdater
             {
                 if (!string.IsNullOrEmpty(gitHubRunnersReadMeDigest))
                 {
-                    var newDockerFileContent = $"FROM buildpack-deps:stretch@sha256:{gitHubRunnersReadMeDigest}";
+                    var newContentInDockerfile = $"FROM buildpack-deps:stretch@sha256:{gitHubRunnersReadMeDigest}";
                     var dockerFileLocation = "images/build/Dockerfiles/gitHubRunners.BuildPackDepsStretch.Dockerfile";
                     var newBranchName = "autoupdater/update.githubrunners.digest";
                     var tempDir = Path.GetTempPath();
@@ -25,10 +25,15 @@ namespace AutoUpdater
 cd {tempDir}
 git clone https://github.com/microsoft/oryx --depth 1
 git checkout -b {newBranchName}
-echo '{gitHubRunnersReadMeDigest}' > {dockerFileLocation}
+echo '{newContentInDockerfile}' > {dockerFileLocation}
 git add {dockerFileLocation}
 git commit -m 'Updated GitHub runners digest sha'
 git push -u origin {newBranchName}
+curl \
+  -X POST \
+  -H 'Accept: application/vnd.github.v3+json' \
+  https://api.github.com/repos/microsoft/oryx/pulls \
+  -d '{{""title"":""Updated GitHub runners digest"",""head"":""{{{newBranchName}}}"",""base"":""master""}}'
 ";
                 }
             }
