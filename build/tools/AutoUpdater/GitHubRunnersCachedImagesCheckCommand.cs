@@ -7,10 +7,12 @@ using McMaster.Extensions.CommandLineUtils;
 
 namespace AutoUpdater
 {
+    [Command("digest", Description = "")]
     public class GitHubRunnersCachedImagesCheckCommand
     {
         public int OnExecute(CommandLineApplication app, IConsole console)
         {
+            Console.WriteLine("foo");
             var gitHubRunnersReadMeDigest = GetDigestFromGitHubRunnersReadMe();
             var oryxDockerfileDigest = GetDigestFromOryxGitHubRunnersDockerfile();
             if (!string.Equals(gitHubRunnersReadMeDigest, oryxDockerfileDigest, StringComparison.OrdinalIgnoreCase))

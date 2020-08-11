@@ -1,48 +1,19 @@
-resources:
-    - repo: self
-      fetchDepth: 15
-    
-    variables:
-    - group: Oryx
-    
-    jobs:
-    - job: Job_Security
-      displayName: Security
-      pool:
-        name: Hosted VS2017
-      steps:
-      - template: templates/_securityChecks.yml
-    
-    - job: Job_BuildImage
-      displayName: Build and Test Build Images
-      pool:
-        name: OryxLinux
-      timeoutInMinutes: 480
-      steps:
-      - script: |
-          echo "##vso[task.setvariable variable=BuildBuildImages;]true"
-          echo "##vso[task.setvariable variable=TestBuildImages;]true"
-          echo "##vso[task.setvariable variable=PushBuildImages;]false"
-          echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
-          echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]true"
-          echo "##vso[task.setvariable variable=RELEASE_TAG_NAME;]$(Build.BuildNumber)"
-        displayName: 'Set variables'
-      - template: templates/_buildTemplate.yml
-    
-    - job: Job_RuntimeImages
-      displayName: Build and Test Runtime Images
-      pool:
-        name: OryxLinux
-      timeoutInMinutes: 300
-      steps:
-      - script: |
-          echo "##vso[task.setvariable variable=BuildRuntimeImages;]true"
-          echo "##vso[task.setvariable variable=TestRuntimeImages;]true"
-          echo "##vso[task.setvariable variable=PushBuildImages;]false"
-          echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
-          echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]true"
-          echo "##vso[task.setvariable variable=RELEASE_TAG_NAME;]$(Build.BuildNumber)"
-        displayName: 'Set variables'
-      - template: templates/_buildTemplate.yml
-    
-    trigger: none
+steps:
+- checkout: self
+    clean: true
+
+- task: UseDotNet@2
+    displayName: 'Use .NET Core sdk 3.1.x'
+    inputs:
+    version: 3.1.x
+
+- script: |
+    dotnet publish build/tools/AutoUpdater/AutoUpdater.csproj -c Release -o /tmp/autoupdater
+    newPath="/tmp/autoupdater:$PATH"
+    echo "##vso[task.setvariable variable=[PATH];]$newPath"
+  displayName: 'Publish AutoUpdater and set in path'
+
+- script: |
+    autoupdater digest
+  displayName: 'Check GitHub runners digest and send out PullRequest if needed'
+
