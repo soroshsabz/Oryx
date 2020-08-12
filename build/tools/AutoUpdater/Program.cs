@@ -14,6 +14,9 @@ namespace AutoUpdater
             return 0;
         }
 
-        private static int Main(string[] args) => CommandLineApplication.Execute<Program>(args);
+        private static int Main(string[] args)
+        {
+            return CommandLineApplication.Execute<Program>(args);
+        }
     }
 }
