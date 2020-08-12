@@ -10,7 +10,6 @@ namespace AutoUpdater
     {
         public int OnExecute(CommandLineApplication app, IConsole console)
         {
-            Console.WriteLine("foo");
             var gitHubRunnersReadMeDigest = GetDigestFromGitHubRunnersReadMe();
             var oryxDockerfileDigest = GetDigestFromOryxGitHubRunnersDockerfile();
             if (!string.Equals(gitHubRunnersReadMeDigest, oryxDockerfileDigest, StringComparison.OrdinalIgnoreCase))
@@ -24,9 +23,9 @@ namespace AutoUpdater
                     
                     var scriptBuilder = new ShellScriptBuilder(cmdSeparator: Environment.NewLine)
                         .AddShebang("/bin/bash")
-                        .AddCommand("set -ex")
+                        .AddCommand("set -e")
                         .AddCommand($"cd {tempDir}")
-                        .AddCommand($"git clone https://github.com/microsoft/oryx --depth 1")
+                        .AddCommand($"git clone https://kiranongithub:$PAT@github.com/kiranongithub/oryx.git")
                         .AddCommand($"cd oryx")
                         .AddCommand($"git config --global user.email \"oryxci@gmail.com\"")
                         .AddCommand($"git config --global user.name \"Oryx-CI\"")
@@ -35,9 +34,9 @@ namespace AutoUpdater
                         .AddCommand($"git add {dockerFileLocation}")
                         .AddCommand($"git commit -m 'Updated GitHub runners digest sha'")
                         .AddCommand($"git push -u origin {newBranchName}")
-                        .AddCommand($"curl -X POST -H 'Accept: application/vnd.github.v3+json' " +
+                        .AddCommand($"curl -u kiranongithub:$PAT -X POST -H 'Accept: application/vnd.github.v3+json' " +
                         $"https://api.github.com/repos/microsoft/oryx/pulls -d " +
-                        @$"'{{""title"":""Updated GitHub runners digest"",""head"":""{{{newBranchName}}}"",""base"":""master""}}'")
+                        @$"'{{""title"":""Updated GitHub runners digest"",""head"":""kiranongithub:{newBranchName}"",""base"":""master""}}'")
                         .AddCommand("cd ..")
                         .AddCommand("rm -rf oryx");
                     var script = scriptBuilder.ToString();
